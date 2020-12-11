@@ -14,21 +14,11 @@ import java.util.*;
 public class PangramChecker {
 
     public boolean check(String sentence){
-        char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        Set<Character> alphabet = new HashSet<>();
-        for (char c : chars) {
-            alphabet.add(c);
-        }
-
-        sentence = sentence.replace(" ", "");
-        sentence = sentence.toLowerCase(Locale.ROOT);
-        chars = sentence.toCharArray();
-        Set<Character> sentenceChars = new HashSet<>();
-        for (char c : chars) {
-            sentenceChars.add(c);
-        }
-
-        return sentenceChars.containsAll(alphabet);
+        return sentence.chars()
+                .filter(Character::isLetter)
+                .map(Character::toLowerCase)
+                .distinct()
+                .count() == 26;
     }
 
 }
