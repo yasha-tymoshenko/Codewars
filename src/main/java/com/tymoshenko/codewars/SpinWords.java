@@ -1,19 +1,29 @@
 package com.tymoshenko.codewars;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class SpinWords {
 
-    public String spinWords(String sentence) {
-        // Split by any whitespace.
-        String[] words = sentence.split("\\s");
+    private static final String ANY_WHITESPACE_REGEX = "\\s";
 
+    public String spinWords(String sentence) {
+        String reversedSentence = "";
+        if (sentence != null) {
+            String[] words = sentence.split(ANY_WHITESPACE_REGEX);
+            reversedSentence = reverseWords(words);
+        }
+        return reversedSentence;
+    }
+
+    @NotNull
+    private String reverseWords(String[] words) {
         List<String> reversedWords = new LinkedList<>();
         for (String word : words) {
             reversedWords.add(reverse(word));
         }
-
         return String.join(" ", reversedWords);
     }
 

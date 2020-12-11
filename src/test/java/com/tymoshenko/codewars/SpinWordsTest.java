@@ -55,17 +55,26 @@ class SpinWordsTest {
 
     @Test
     void exceptionWhenNullArg() {
-        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(null));
+//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(null));
+        arg = null;
+        expected = "";
+        test();
     }
 
     @Test
     void exceptionWhenEmptyString() {
-        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(""));
+//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(""));
+        arg = "";
+        expected = "";
+        test();
     }
 
     @Test
     void exceptionWhenBlankString() {
-        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords("    "));
+//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords("    "));
+        arg = "    ";
+        expected = "";
+        test();
     }
 
     @Test
