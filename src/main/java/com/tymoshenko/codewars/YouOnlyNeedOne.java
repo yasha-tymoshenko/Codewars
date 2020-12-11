@@ -16,6 +16,16 @@ public class YouOnlyNeedOne {
     }
 
     public static boolean check(Object[] a, Object x) {
+        // Better solution 1
+        /*
+            Arrays.asList(a).contains(x);
+         */
+
+        // Better solution 2
+        /*
+             Arrays.stream( a ).anyMatch( e -> e == x );
+         */
+
         Predicate<Object> predicate = x instanceof Number ? Number.class::isInstance :
                 object -> (object instanceof String || object instanceof  Character);
         return Arrays.stream(a)
