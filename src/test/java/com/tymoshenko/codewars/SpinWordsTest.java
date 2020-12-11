@@ -6,60 +6,77 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SpinWordsTest {
 
-    private SpinWords spinWords = new SpinWords();
+    private final SpinWords spinWords = new SpinWords();
+
     private String arg;
     private String expected;
-    private String actual;
 
     @Test
     void reverseWord5LettersAngKeepCase() {
         arg = "Green";
-        expected = "Neerg";
+        expected = "neerG";
         test();
     }
 
     @Test
     void reverseWords5LettersAllUpperCase() {
-
+        arg = "HOUSE";
+        expected = "ESUOH";
+        test();
     }
 
     @Test
     void reverseWords5LettersAllLowerCase() {
-
+        arg = "train";
+        expected = "nairt";
+        test();
     }
 
     @Test
     void reverseWords5LettersRussian() {
-
+        arg = "школа";
+        expected = "алокш";
+        test();
     }
 
     @Test
     void reverseWordLongerThan5Letters() {
-
+        arg = "Hogwarts";
+        expected = "strawgoH";
+        test();
     }
 
     @Test
     void noReverseWordLessThan5Letter() {
-
+        arg = "Tree";
+        expected = "Tree";
+        test();
     }
 
     @Test
     void exceptionWhenNullArg() {
-
+        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(null));
     }
 
     @Test
     void exceptionWhenEmptyString() {
+        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(""));
+    }
 
+    @Test
+    void exceptionWhenBlankString() {
+        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords("    "));
     }
 
     @Test
     void reverseAllWordsLongerThan5Letters() {
-
+        arg = "Harry Potter is a wizard who defeated Lord Voldemort.";
+        expected = "yrraH rettoP is a draziw who detaefed droL tromedloV.";
+        test();
     }
 
     private void test() {
-        actual = spinWords.spinWords(arg);
+        String actual = spinWords.spinWords(arg);
         assertEquals(expected, actual);
     }
 
