@@ -28,7 +28,7 @@ class SpinWordsTest {
     @Test
     void reverseWords5LettersAllLowerCase() {
         arg = "train";
-        expected = "nairt";
+        expected = "niart";
         test();
     }
 
@@ -71,7 +71,7 @@ class SpinWordsTest {
     @Test
     void reverseAllWordsLongerThan5Letters() {
         arg = "Harry Potter is a wizard who defeated Lord Voldemort.";
-        expected = "yrraH rettoP is a draziw who detaefed droL tromedloV.";
+        expected = "yrraH rettoP is a draziw who detaefed Lord .tromedloV";
         test();
     }
 
