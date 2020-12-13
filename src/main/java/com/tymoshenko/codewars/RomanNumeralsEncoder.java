@@ -91,7 +91,7 @@ public class RomanNumeralsEncoder {
                 romanNumber = mantissa == 4 ? FIVES.get(decade) : ONES.get(decade + 1);
                 result = String.format("%s%s", ONES.get(decade), romanNumber);
             } else if (mantissa < 1 || mantissa > 9 || decade > 3) {
-                // Max encodable roman number is 3999 MMMIM so decade cannot be > 3.
+                // Max encodable roman number is 3999 MMMCMXCIX so decade cannot be > 3.
                 result = NOT_A_NUMBER.name();
             }
             return result;
