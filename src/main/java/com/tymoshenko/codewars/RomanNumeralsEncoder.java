@@ -44,149 +44,76 @@ public class RomanNumeralsEncoder {
     }
 
     private String numberToRoman(int n) {
-        String number = Integer.toString(n);
-        // 1 -> 1, 2 -> 10, 3 -> 100... (the magnitude is powers of 10 of the most significant digit in the number).
-        int magnitude = number.length() - 1;
+        String decimalNumberAsString = Integer.toString(n);
+        int decade = decimalNumberAsString.length() - 1;
         StringBuilder result = new StringBuilder();
 
-        for (int i = 0; i < number.length(); i++) {
-            int mantissa = Integer.parseInt("" + number.charAt(i));
+        for (int i = 0; i < decimalNumberAsString.length(); i++) {
+            int mantissa = Integer.parseInt(String.valueOf(decimalNumberAsString.charAt(i)));
             if (mantissa == 0) {
+                // Skip zeroes.
                 continue;
             }
-            int decade = magnitude--;
-            result.append(numberToRoman(mantissa, decade));
+            result.append(RomanNumber.convert(mantissa, decade--));
         }
 
         return result.toString();
     }
 
-    private StringBuilder numberToRoman(int mantissa, int decade) {
-        StringBuilder result = new StringBuilder(RomanNumber.NOT_A_NUMBER.name());
-        if ((mantissa == 1 || mantissa == 5)
-                && decade <= 3) {
-            int n = mantissa * (int) Math.pow(10, decade);
-            result = new StringBuilder(RomanNumber.fromDecimalValue(n).name());
-        } else if (decade == 0) {
-            result = new StringBuilder(digitToRoman(mantissa));
-        } else {
-            result = RomanNumber.giveClosestRomanNumber(mantissa, decade);
-        }
-        return result;
-    }
-
-    private String digitToRoman(int digit) {
-        String result = RomanNumber.NOT_A_NUMBER.name();
-        // I, V, X
-        RomanNumber romanNumber = RomanNumber.fromDecimalValue(digit);
-        if (RomanNumber.NOT_A_NUMBER != romanNumber) {
-            result = romanNumber.name();
-        } else if (digit <= 3) {
-            int sum = 2;
-            result = RomanNumber.I.name() + RomanNumber.I.name();
-            while (sum < digit) {
-                result += RomanNumber.I.name();
-                sum += RomanNumber.I.decimalValue;
-            }
-        } else if (digit == 4) {
-            result = RomanNumber.I.name() + RomanNumber.V.name();
-        } else if (digit <= 8) {
-            int sum = 6;
-            result = RomanNumber.V.name() + RomanNumber.I.name();
-            while (sum < digit) {
-                result += RomanNumber.I.name();
-                sum += RomanNumber.I.decimalValue;
-            }
-        } else if (digit == 9) {
-            result = RomanNumber.I.name() + RomanNumber.X.name();
-        }
-        return result;
-    }
-
     enum RomanNumber {
-        // Do we really need other than 1,5,10,50,100,500,1000?
         NOT_A_NUMBER(0),
         I(1),
-        //        II(2),
-//        III(3),
-//        IV(4),
         V(5),
-        //        VI(6),
-//        VII(7),
-//        VIII(8),
-//        IX(9),
         X(10),
         L(50),
         C(100),
         D(500),
         M(1000);
-        private final int decimalValue;
 
         private static final List<RomanNumber> ONES = Arrays.asList(I, X, C, M);
         private static final List<RomanNumber> FIVES = Arrays.asList(V, L, D);
 
+        private final int decimalValue;
 
         RomanNumber(int decimalValue) {
             this.decimalValue = decimalValue;
         }
 
-        int add(RomanNumber other) {
-            return this.decimalValue + other.decimalValue;
-        }
-
-        boolean equalsToDecimal(int decimalValue) {
-            return this.decimalValue == decimalValue;
-        }
-
-        static StringBuilder giveClosestRomanNumber(int mantissa, int decade) {
+        static StringBuilder convert(int mantissa, int decade) {
             StringBuilder result = new StringBuilder();
-            RomanNumber romanNumber = NOT_A_NUMBER;
+            RomanNumber romanNumber;
             final int decimal = mantissa * (int) Math.pow(10, decade);
-            int identicalSymbols = 1;
-
             if (mantissa < 4 && decade <= 3) {
                 // 1,2,3 and x10, x100, x1000.
                 romanNumber = ONES.get(decade);
-                result.append(romanNumber);
-                int sum = romanNumber.decimalValue;
-                while (sum < decimal && identicalSymbols <= MAX_IDENTICAL_SYMBOLS_IN_A_ROW) {
-                    result.append(romanNumber);
-                    sum += romanNumber.decimalValue;
-                    identicalSymbols++;
-                }
-            } else if (mantissa == 4 && decade < 3) {
-                // 4, 40, 400.
-                romanNumber = FIVES.get(decade);
+                result.append(addOnesToRomanNumber(decimal, romanNumber, decade, 1));
+            } else if ((mantissa == 4 || mantissa == 9) && decade < 3) {
+                // 4, 40, 400 and 9, 90, 900.
+                romanNumber = mantissa == 4 ? FIVES.get(decade) : ONES.get(decade + 1);
                 RomanNumber one = ONES.get(decade);
                 result.append(one).append(romanNumber);
             } else if (mantissa > 4 && mantissa < 9 && decade <= 3) {
                 // 5, 6, 7, 8 and x10, x100.
                 romanNumber = FIVES.get(decade);
-                result.append(romanNumber);
-                RomanNumber one = ONES.get(decade);
-                int sum = romanNumber.decimalValue;
-                identicalSymbols = 0;
-                while (sum < decimal && identicalSymbols <= MAX_IDENTICAL_SYMBOLS_IN_A_ROW) {
-                    result.append(one);
-                    sum += one.decimalValue;
-                    identicalSymbols++;
-                }
-            } else if (mantissa == 9 && decade < 3) {
-                // 9, 90, 900.
-                RomanNumber one = ONES.get(decade);
-                RomanNumber ten = ONES.get(decade + 1);
-                result.append(one).append(ten);
+                result.append(addOnesToRomanNumber(decimal, romanNumber, decade, 0));
+            } else if (mantissa < 1 || mantissa > 9 || decade > 3) {
+                result.append(NOT_A_NUMBER.name());
             }
             return result;
         }
 
-        static RomanNumber fromDecimalValue(int decimalValue) {
-            for (RomanNumber value : values()) {
-                if (value.decimalValue == decimalValue) {
-                    return value;
-                }
+        private static String addOnesToRomanNumber(
+                int target, RomanNumber romanNumber, int decade, int identicalSymbols) {
+            StringBuilder result = new StringBuilder(romanNumber.name());
+            RomanNumber one = ONES.get(decade);
+            int sum = romanNumber.decimalValue;
+            while (sum < target && identicalSymbols <= MAX_IDENTICAL_SYMBOLS_IN_A_ROW) {
+                result.append(one);
+                sum += one.decimalValue;
+                identicalSymbols++;
             }
-            return NOT_A_NUMBER;
+            return result.toString();
         }
+
     }
 }
