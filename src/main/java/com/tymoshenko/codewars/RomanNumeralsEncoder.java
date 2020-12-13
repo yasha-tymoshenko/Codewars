@@ -46,6 +46,7 @@ public class RomanNumeralsEncoder {
             mantissa = Integer.parseInt(String.valueOf(decimalNumber.charAt(i)));
             if (mantissa == 0) {
                 // Skip zeroes.
+                decade--;
                 continue;
             }
             result.append(RomanNumber.convert(mantissa, decade--));

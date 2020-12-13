@@ -26,12 +26,17 @@ class RomanNumeralsEncoderTest {
     }
 
     @Test
-    void conver_20_90() {
+    void convert_20_90() {
         assertEquals("XXI", conversion.solution(21));
         assertEquals("XXXV", conversion.solution(35));
         assertEquals("LXXV", conversion.solution(75));
         assertEquals("LXXXIX", conversion.solution(89));
         assertEquals("XC", conversion.solution(90));
+    }
+
+    @Test
+    void convertShouldCorrectlyProcessZeroesInTheMiddle() {
+        assertEquals("MMLXVI", conversion.solution(2066));
     }
 
     @Test
