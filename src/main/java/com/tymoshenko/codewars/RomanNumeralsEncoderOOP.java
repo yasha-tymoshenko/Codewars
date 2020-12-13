@@ -103,7 +103,7 @@ final class RomanNumber {
     }
 
     boolean isNotZero() {
-        return !(digits.isEmpty() || digits.get(0) == RomanDigit.ZERO);
+        return !digits.isEmpty();
     }
 
     RomanNumber addRight(RomanDigit digit) {
@@ -128,10 +128,6 @@ final class RomanNumber {
 
     boolean isLessThan(int number) {
         return this.toDecimal() < number;
-    }
-
-    boolean isNotEqualsTo(int number) {
-        return this.toDecimal() != number;
     }
 
     private int toDecimal() {
