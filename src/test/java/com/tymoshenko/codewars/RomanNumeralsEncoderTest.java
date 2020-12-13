@@ -35,6 +35,11 @@ class RomanNumeralsEncoderTest {
     }
 
     @Test
+    void convertMaxNumber() {
+        assertEquals("MMMCMXCIX", conversion.solution(3999));
+    }
+
+    @Test
     void exceptionWhenConvertingZero() {
 
     }

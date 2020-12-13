@@ -36,20 +36,14 @@ public class RomanNumeralsEncoder {
 
     private static final int MAX_IDENTICAL_SYMBOLS_IN_A_ROW = 3;
 
-    RomanNumeralsEncoder() {
-    }
-
     public String solution(int n) {
-        return numberToRoman(n);
-    }
+        String decimalNumber = Integer.toString(n);
+        int mantissa;
+        int decade = decimalNumber.length() - 1;
 
-    private String numberToRoman(int n) {
-        String decimalNumberAsString = Integer.toString(n);
-        int decade = decimalNumberAsString.length() - 1;
         StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < decimalNumberAsString.length(); i++) {
-            int mantissa = Integer.parseInt(String.valueOf(decimalNumberAsString.charAt(i)));
+        for (int i = 0; i < decimalNumber.length(); i++) {
+            mantissa = Integer.parseInt(String.valueOf(decimalNumber.charAt(i)));
             if (mantissa == 0) {
                 // Skip zeroes.
                 continue;
@@ -79,41 +73,40 @@ public class RomanNumeralsEncoder {
             this.decimalValue = decimalValue;
         }
 
-        static StringBuilder convert(int mantissa, int decade) {
-            StringBuilder result = new StringBuilder();
+        int toDecimal() {
+            return decimalValue;
+        }
+
+        static String convert(int mantissa, int decade) {
+            final int decimalNumber = mantissa * (int) Math.pow(10, decade);
+            String result = NOT_A_NUMBER.name();
             RomanNumber romanNumber;
-            final int decimal = mantissa * (int) Math.pow(10, decade);
-            if (mantissa < 4 && decade <= 3) {
-                // 1,2,3 and x10, x100, x1000.
-                romanNumber = ONES.get(decade);
-                result.append(addOnesToRomanNumber(decimal, romanNumber, decade, 1));
+            if ((mantissa < 4 || (mantissa > 4 && mantissa < 9) ) && decade <= 3) {
+                // 1,2,3 and 5,6,7,8 and x10, x100, x1000.
+                romanNumber = mantissa < 4 ? ONES.get(decade) : FIVES.get(decade);
+                result = addOnesToRomanNumber(romanNumber, decimalNumber, decade);
             } else if ((mantissa == 4 || mantissa == 9) && decade < 3) {
-                // 4, 40, 400 and 9, 90, 900.
+                // 4 and 9 and x10, x100.
                 romanNumber = mantissa == 4 ? FIVES.get(decade) : ONES.get(decade + 1);
-                RomanNumber one = ONES.get(decade);
-                result.append(one).append(romanNumber);
-            } else if (mantissa > 4 && mantissa < 9 && decade <= 3) {
-                // 5, 6, 7, 8 and x10, x100.
-                romanNumber = FIVES.get(decade);
-                result.append(addOnesToRomanNumber(decimal, romanNumber, decade, 0));
+                result = String.format("%s%s", ONES.get(decade), romanNumber);
             } else if (mantissa < 1 || mantissa > 9 || decade > 3) {
-                result.append(NOT_A_NUMBER.name());
+                // Max encodable roman number is 3999 MMMIM so decade cannot be > 3.
+                result = NOT_A_NUMBER.name();
             }
             return result;
         }
 
-        private static String addOnesToRomanNumber(
-                int target, RomanNumber romanNumber, int decade, int identicalSymbols) {
+        private static String addOnesToRomanNumber(RomanNumber romanNumber, int decimalNumber, int decade) {
             StringBuilder result = new StringBuilder(romanNumber.name());
             RomanNumber one = ONES.get(decade);
-            int sum = romanNumber.decimalValue;
-            while (sum < target && identicalSymbols <= MAX_IDENTICAL_SYMBOLS_IN_A_ROW) {
+            int sum = romanNumber.toDecimal();
+            int identicalSymbols = romanNumber == one ? 1 : 0;
+            while (sum < decimalNumber && identicalSymbols <= MAX_IDENTICAL_SYMBOLS_IN_A_ROW) {
                 result.append(one);
-                sum += one.decimalValue;
+                sum += one.toDecimal();
                 identicalSymbols++;
             }
             return result.toString();
         }
-
     }
 }
