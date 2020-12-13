@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RomanNumeralsEncoderTest {
 
-    private final RomanNumeralsEncoder conversion = new RomanNumeralsEncoder();
+    private final DecimalToRomanConverter conversion = new RomanNumeralsEncoderCleverer();
 
     @Test
     void shouldConvertToRoman_1_9() {

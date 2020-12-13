@@ -1,5 +1,7 @@
 package com.tymoshenko.codewars;
 
+import checkers.oigj.quals.O;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,10 +34,11 @@ import java.util.List;
  * <p>
  * 1987 = MCMLXXXVII
  */
-public class RomanNumeralsEncoder {
+public class RomanNumeralsEncoder implements DecimalToRomanConverter {
 
     private static final int MAX_IDENTICAL_SYMBOLS_IN_A_ROW = 3;
 
+    @Override
     public String solution(int n) {
         String decimalNumber = Integer.toString(n);
         int mantissa;
