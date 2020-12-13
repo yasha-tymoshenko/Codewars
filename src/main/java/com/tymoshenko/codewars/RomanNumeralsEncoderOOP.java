@@ -106,14 +106,12 @@ final class RomanNumber {
         return !digits.isEmpty();
     }
 
-    RomanNumber addRight(RomanDigit digit) {
-        return addRight(digit.toRoman());
+    void addRight(RomanDigit digit) {
+        addRight(digit.toRoman());
     }
 
     RomanNumber addRight(RomanNumber other) {
-        if (other.isNotZero()) {
-            this.digits.addAll(other.digits);
-        }
+        this.digits.addAll(other.digits);
         return this;
     }
 
