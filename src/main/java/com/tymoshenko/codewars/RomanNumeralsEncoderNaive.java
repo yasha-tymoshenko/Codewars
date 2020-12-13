@@ -34,7 +34,7 @@ import java.util.List;
  * <p>
  * 1987 = MCMLXXXVII
  */
-public class RomanNumeralsEncoder implements DecimalToRomanConverter {
+public class RomanNumeralsEncoderNaive implements DecimalToRomanConverter {
 
     private static final int MAX_IDENTICAL_SYMBOLS_IN_A_ROW = 3;
 
