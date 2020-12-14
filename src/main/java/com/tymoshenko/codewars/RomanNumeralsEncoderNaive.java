@@ -1,7 +1,5 @@
 package com.tymoshenko.codewars;
 
-import checkers.oigj.quals.O;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +32,7 @@ import java.util.List;
  * <p>
  * 1987 = MCMLXXXVII
  */
+@SuppressWarnings("unused")
 public class RomanNumeralsEncoderNaive implements DecimalToRomanConverter {
 
     private static final int MAX_IDENTICAL_SYMBOLS_IN_A_ROW = 3;

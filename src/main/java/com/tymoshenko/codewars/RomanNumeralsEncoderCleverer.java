@@ -1,5 +1,6 @@
 package com.tymoshenko.codewars;
 
+@SuppressWarnings("unused")
 public class RomanNumeralsEncoderCleverer implements DecimalToRomanConverter {
 
     @Override
