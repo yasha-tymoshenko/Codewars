@@ -37,20 +37,23 @@ import static java.util.stream.Collectors.joining;
  */
 public class PyramidSlideDown {
 
+    private PyramidSlideDown() {
+    }
+
     public static int longestSlideDown(int[][] pyramid) {
         initBlocks(pyramid);
         Node root = toTree(pyramid);
         return sum(root, new Node[pyramid.length], 0);
     }
 
-    static Map<Integer, List<Block>> blocksMap;
+    static Map<Integer, List<Data>> blocksMap;
 
-    public static final class Block {
+    public static final class Data {
         int row;
         int col;
         int value;
 
-        public Block(int row, int col, int value) {
+        public Data(int row, int col, int value) {
             this.row = row;
             this.col = col;
             this.value = value;
@@ -60,8 +63,8 @@ public class PyramidSlideDown {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Block block = (Block) o;
-            return row == block.row && col == block.col && value == block.value;
+            Data data = (Data) o;
+            return row == data.row && col == data.col && value == data.value;
         }
 
         @Override
@@ -79,36 +82,37 @@ public class PyramidSlideDown {
     public static final class Node {
         Node left;
         Node right;
-        Block block;
-        public Node(Block block) {
-            this.block = block;
+        Data data;
+
+        public Node(Data data) {
+            this.data = data;
         }
 
         @Override
         public String toString() {
-            return String.format("N-%d", block.value);
+            return String.format("%d", data.value);
         }
     }
 
     static void initBlocks(int[][] p) {
         blocksMap = new HashMap<>();
         for (int i = 0; i < p.length; i++) {
-            LinkedList<Block> blocks = new LinkedList<>();
-            blocksMap.put(i, blocks);
+            LinkedList<Data> dataList = new LinkedList<>();
+            blocksMap.put(i, dataList);
             for (int j = 0; j < p[i].length; j++) {
-                Block block = new Block(i, j, p[i][j]);
-                blocks.add(block);
+                Data data = new Data(i, j, p[i][j]);
+                dataList.add(data);
             }
         }
     }
 
-    static Block getBlock(int i, int j) {
+    static Data getBlock(int i, int j) {
         return blocksMap.get(i).get(j);
     }
 
     static Node toTree(int[][] pyramid) {
-        Block rootBlock = blocksMap.get(0).get(0);
-        Node root = new Node(rootBlock);
+        Data rootData = getBlock(0, 0);
+        Node root = new Node(rootData);
         addChildren(root, 1, 0, pyramid);
         return root;
     }
@@ -127,21 +131,17 @@ public class PyramidSlideDown {
     static int sum(Node node, Node[] nodes, int index) {
         if (node == null) {
             return 0;
-        }  else {
-
-            nodes[index] = node;
-            index++;
-
-            if (node.left == null && node.right == null) {
-                System.out.print("Sum = " + Arrays.stream(nodes).mapToInt(n -> n.block.value).sum() + " ");
-
-                System.out.println(Arrays.stream(nodes).map(Node::toString).collect(joining(", ")));
-                return node.block.value;
-            }
-
-
-
-            return node.block.value + Math.max(sum(node.left, nodes, index), sum(node.right, nodes, index));
         }
+        nodes[index] = node;
+        index++;
+
+        if (node.left == null && node.right == null) {
+            System.out.print("Sum = " + Arrays.stream(nodes).mapToInt(n -> n.data.value).sum() + " ");
+            System.out.println(Arrays.stream(nodes).map(Node::toString).collect(joining(", ")));
+            return node.data.value;
+        }
+
+        return node.data.value + Math.max(sum(node.left, nodes, index), sum(node.right, nodes, index));
     }
+
 }
