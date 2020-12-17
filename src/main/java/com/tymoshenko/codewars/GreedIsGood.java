@@ -53,16 +53,12 @@ public class GreedIsGood {
         return (times / 3) * tripleScore(die) + (times % 3) * singleScore(die);
     }
 
-    private static int singleScore(int dieValue) {
-        switch (dieValue) {
+    private static int singleScore(int die) {
+        switch (die) {
             case 1:
                 return 100;
             case 5:
                 return 50;
-            case 2:
-            case 3:
-            case 4:
-            case 6:
             default:
                 return 0;
         }
