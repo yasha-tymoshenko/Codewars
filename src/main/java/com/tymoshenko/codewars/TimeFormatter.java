@@ -36,9 +36,9 @@ public class TimeFormatter {
                 .replaceAll("(.+), (.+?)$", "$1 and $2");
     }
 
-    private static String formatTime(int seconds, TimeUnit timeUnit) {
+    private static String formatTime(int time, TimeUnit timeUnit) {
         String formatted = "";
-        int duration = seconds / timeUnit.getSeconds();
+        int duration = time / timeUnit.getSeconds();
         if (timeUnit.getLimit() > 0) {
             duration %= timeUnit.getLimit();
         }
