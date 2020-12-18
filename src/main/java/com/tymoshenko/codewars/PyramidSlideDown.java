@@ -37,26 +37,46 @@ import static java.util.stream.Collectors.joining;
  */
 public class PyramidSlideDown {
 
+    private static Node[] longestSlideDownNodes;
+
     private PyramidSlideDown() {
     }
 
     public static int longestSlideDown(int[][] pyramid) {
-        initBlocks(pyramid);
-        Node root = toTree(pyramid);
-        return sum(root, new Node[pyramid.length], 0);
+        Data.initBlocks(pyramid);
+        longestSlideDownNodes = new Node[pyramid.length];
+        Node tree = Node.toTree(pyramid);
+        return Node.sum(tree, 0);
     }
 
-    static Map<Integer, List<Data>> blocksMap;
-
     public static final class Data {
+
+        private static Map<Integer, List<Data>> dataMap;
+
+        int value;
         int row;
         int col;
-        int value;
 
         public Data(int row, int col, int value) {
             this.row = row;
             this.col = col;
             this.value = value;
+        }
+
+        public static void initBlocks(int[][] p) {
+            dataMap = new HashMap<>();
+            for (int i = 0; i < p.length; i++) {
+                LinkedList<Data> dataList = new LinkedList<>();
+                dataMap.put(i, dataList);
+                for (int j = 0; j < p[i].length; j++) {
+                    Data data = new Data(i, j, p[i][j]);
+                    dataList.add(data);
+                }
+            }
+        }
+
+        public static Data getBlock(int i, int j) {
+            return dataMap.get(i).get(j);
         }
 
         @Override
@@ -78,70 +98,71 @@ public class PyramidSlideDown {
         }
     }
 
-
     public static final class Node {
+        Data data;
+
         Node left;
         Node right;
-        Data data;
 
         public Node(Data data) {
             this.data = data;
+        }
+
+        static Node toTree(int[][] pyramid) {
+            Data rootData = Data.getBlock(0, 0);
+            Node root = new Node(rootData);
+            addChildren(root, pyramid);
+            return root;
+        }
+
+        static void addChildren(Node node, int[][] pyramid) {
+            int row = node.data.row;
+            int col = node.data.col;
+            int nextRow = row + 1;
+
+            node.left = new Node(Data.getBlock(nextRow, col));
+            node.right = new Node(Data.getBlock(nextRow, col + 1));
+
+            if (nextRow + 1 < pyramid.length) {
+                addChildren(node.left, pyramid);
+                addChildren(node.right, pyramid);
+            }
+        }
+
+        static int sum(Node node, int nodeHeight) {
+            if (node == null) {
+                return 0;
+            }
+            longestSlideDownNodes[nodeHeight] = node;
+            nodeHeight++;
+
+            if (node.isLeaf()) {
+                printSum();
+                printLongestSlideDown();
+                return node.data.value;
+            }
+
+            return node.data.value + Math.max(sum(node.left, nodeHeight), sum(node.right, nodeHeight));
+        }
+
+        private static void printSum() {
+            System.out.print("Sum = " + Arrays.stream(longestSlideDownNodes)
+                    .mapToInt(n -> n.data.value).sum() + " ");
+        }
+
+        private static void printLongestSlideDown() {
+            System.out.println(Arrays.stream(longestSlideDownNodes)
+                    .map(Node::toString).collect(joining(", ")));
+        }
+
+        public boolean isLeaf() {
+            return left == null && right == null;
         }
 
         @Override
         public String toString() {
             return String.format("%d", data.value);
         }
-    }
-
-    static void initBlocks(int[][] p) {
-        blocksMap = new HashMap<>();
-        for (int i = 0; i < p.length; i++) {
-            LinkedList<Data> dataList = new LinkedList<>();
-            blocksMap.put(i, dataList);
-            for (int j = 0; j < p[i].length; j++) {
-                Data data = new Data(i, j, p[i][j]);
-                dataList.add(data);
-            }
-        }
-    }
-
-    static Data getBlock(int i, int j) {
-        return blocksMap.get(i).get(j);
-    }
-
-    static Node toTree(int[][] pyramid) {
-        Data rootData = getBlock(0, 0);
-        Node root = new Node(rootData);
-        addChildren(root, 1, 0, pyramid);
-        return root;
-    }
-
-    static void addChildren(Node node, int nextLevel, int index, int[][] pyramid) {
-        node.left = new Node(getBlock(nextLevel, index));
-        node.right = new Node(getBlock(nextLevel, index + 1));
-
-        if (nextLevel + 1 < pyramid.length) {
-            addChildren(node.left, nextLevel + 1, index, pyramid);
-            addChildren(node.right, nextLevel + 1, index + 1, pyramid);
-        }
-
-    }
-
-    static int sum(Node node, Node[] nodes, int index) {
-        if (node == null) {
-            return 0;
-        }
-        nodes[index] = node;
-        index++;
-
-        if (node.left == null && node.right == null) {
-            System.out.print("Sum = " + Arrays.stream(nodes).mapToInt(n -> n.data.value).sum() + " ");
-            System.out.println(Arrays.stream(nodes).map(Node::toString).collect(joining(", ")));
-            return node.data.value;
-        }
-
-        return node.data.value + Math.max(sum(node.left, nodes, index), sum(node.right, nodes, index));
     }
 
 }
