@@ -142,6 +142,7 @@ public class PyramidSlideDown {
         }
 
         static int longestSlideDown() {
+            int max = 0;
             for (int i = 0; i < nodeMap.size(); i++) {
                 List<Node> nodes = nodeMap.get(i);
                 for (Node node : nodes) {
@@ -151,12 +152,12 @@ public class PyramidSlideDown {
                     if (node.right != null && node.right.distance < node.right.data.value + node.distance) {
                         node.right.distance = node.right.data.value + node.distance;
                     }
+                    if (node.data.row == nodes.size() - 1 && node.distance > max) {
+                        max = node.distance;
+                    }
                 }
             }
-            return nodeMap.get(nodeMap.size() - 1)
-                    .stream()
-                    .mapToInt(node -> node.distance)
-                    .max().orElse(-1);
+            return max;
         }
     }
 
