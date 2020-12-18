@@ -37,30 +37,12 @@ public class PyramidSlideDown {
     }
 
     public static int longestSlideDown(int[][] pyramid) {
-        int[][] copy = new int[pyramid.length][];
-        for (int i = 0; i < pyramid.length; i++) {
-            copy[i] = new int[pyramid[i].length];
-            for (int j = 0; j < pyramid[i].length; j++) {
-                copy[i][j] = pyramid[i][j];
+        for (int i = pyramid.length - 1; i > 0; i--) {
+            for (int j = 0; j < pyramid[i].length - 1; j++) {
+                pyramid[i - 1][j] += Math.max(pyramid[i][j], pyramid[i][j + 1]);
             }
         }
-
-        int max = 0;
-        for (int i = 0; i < pyramid.length; i++) {
-            for (int j = 0; j < pyramid[i].length; j++) {
-                if (i + 1 < pyramid.length) {
-                    // left child
-                    if (pyramid[i + 1][j] < copy[i + 1][j] + pyramid[i][j])
-                        pyramid[i + 1][j] = copy[i + 1][j] + pyramid[i][j];
-                    // right child
-                    if (pyramid[i + 1][j + 1] < copy[i + 1][j + 1] + pyramid[i][j])
-                        pyramid[i + 1][j + 1] = copy[i + 1][j + 1] + pyramid[i][j];
-                } else {
-                    max = Math.max(pyramid[i][j], max);
-                }
-            }
-        }
-        return max;
+        return pyramid[0][0];
     }
 
 }
