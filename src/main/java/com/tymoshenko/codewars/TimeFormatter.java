@@ -43,7 +43,7 @@ public class TimeFormatter {
             duration %= timeUnit.getLimit();
         }
         if (duration > 0) {
-            formatted = String.format("%d %s", duration, String.format("%s%s", timeUnit, duration == 1 ? "" : "s"));
+            formatted = String.format("%d %s", duration, String.format("%s%s", timeUnit, duration > 1 ? "s" : ""));
         }
         return formatted;
     }
