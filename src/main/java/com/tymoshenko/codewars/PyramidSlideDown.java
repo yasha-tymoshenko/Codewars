@@ -107,14 +107,6 @@ public class PyramidSlideDown {
             return nodeMap.get(i).get(j);
         }
 
-        public int maxParentValue() {
-            List<Node> olderNodes = nodeMap.get(data.row - 1);
-            return olderNodes.stream()
-                    .filter(olderNode -> olderNode.left.equals(this) || olderNode.right.equals(this))
-                    .mapToInt(olderNode -> olderNode.distance)
-                    .max().orElse(0);
-        }
-
         @Override
         public int hashCode() {
             return data.hashCode();
@@ -150,10 +142,15 @@ public class PyramidSlideDown {
         }
 
         static int longestSlideDown() {
-            for (int i = 1; i < nodeMap.size(); i++) {
+            for (int i = 0; i < nodeMap.size(); i++) {
                 List<Node> nodes = nodeMap.get(i);
                 for (Node node : nodes) {
-                    node.distance = node.data.value + node.maxParentValue();
+                    if (node.left != null && node.left.distance < node.left.data.value + node.distance) {
+                        node.left.distance = node.left.data.value + node.distance;
+                    }
+                    if (node.right != null && node.right.distance < node.right.data.value + node.distance) {
+                        node.right.distance = node.right.data.value + node.distance;
+                    }
                 }
             }
             return nodeMap.get(nodeMap.size() - 1)
