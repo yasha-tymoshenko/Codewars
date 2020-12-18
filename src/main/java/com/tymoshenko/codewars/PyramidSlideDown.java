@@ -38,20 +38,32 @@ import static java.util.stream.Collectors.joining;
 public class PyramidSlideDown {
 
     private static Node[] longestSlideDownNodes;
+    private static Map<Integer, List<Node>> nodeMap;
 
     private PyramidSlideDown() {
     }
 
     public static int longestSlideDown(int[][] pyramid) {
-        Data.initBlocks(pyramid);
+        initNodes(pyramid);
         longestSlideDownNodes = new Node[pyramid.length];
         Node tree = Node.toTree(pyramid);
         return Node.sum(tree, 0);
     }
 
-    public static final class Data {
+    private static void initNodes(int[][] p) {
+        nodeMap = new HashMap<>();
+        for (int i = 0; i < p.length; i++) {
+            LinkedList<Node> nodes = new LinkedList<>();
+            nodeMap.put(i, nodes);
+            for (int j = 0; j < p[i].length; j++) {
+                Data data = new Data(p[i][j], i, j);
+                Node node = new Node(data);
+                nodes.add(node);
+            }
+        }
+    }
 
-        private static Map<Integer, List<Data>> dataMap;
+    public static final class Data {
 
         int value;
         int row;
@@ -61,22 +73,6 @@ public class PyramidSlideDown {
             this.row = row;
             this.col = col;
             this.value = value;
-        }
-
-        public static void initBlocks(int[][] p) {
-            dataMap = new HashMap<>();
-            for (int i = 0; i < p.length; i++) {
-                LinkedList<Data> dataList = new LinkedList<>();
-                dataMap.put(i, dataList);
-                for (int j = 0; j < p[i].length; j++) {
-                    Data data = new Data(p[i][j], i, j);
-                    dataList.add(data);
-                }
-            }
-        }
-
-        public static Data getBlock(int i, int j) {
-            return dataMap.get(i).get(j);
         }
 
         @Override
@@ -108,9 +104,21 @@ public class PyramidSlideDown {
             this.data = data;
         }
 
+        private static Node getNode(int i, int j) {
+            return nodeMap.get(i).get(j);
+        }
+
+        public boolean isLeaf() {
+            return left == null && right == null;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d", data.value);
+        }
+
         static Node toTree(int[][] pyramid) {
-            Data rootData = Data.getBlock(0, 0);
-            Node root = new Node(rootData);
+            Node root = getNode(0, 0);
             addChildren(root, pyramid);
             return root;
         }
@@ -120,8 +128,8 @@ public class PyramidSlideDown {
             int col = node.data.col;
             int nextRow = row + 1;
 
-            node.left = new Node(Data.getBlock(nextRow, col));
-            node.right = new Node(Data.getBlock(nextRow, col + 1));
+            node.left = getNode(nextRow, col);
+            node.right = getNode(nextRow, col + 1);
 
             if (nextRow + 1 < pyramid.length) {
                 addChildren(node.left, pyramid);
@@ -134,15 +142,14 @@ public class PyramidSlideDown {
                 return 0;
             }
             longestSlideDownNodes[nodeHeight] = node;
-            nodeHeight++;
-
             if (node.isLeaf()) {
                 printSum();
                 printLongestSlideDown();
                 return node.data.value;
             }
-
-            return node.data.value + Math.max(sum(node.left, nodeHeight), sum(node.right, nodeHeight));
+            int sumLeft = sum(node.left, nodeHeight + 1);
+            int sumRight = sum(node.right, nodeHeight + 1);
+            return node.data.value + Math.max(sumLeft, sumRight);
         }
 
         private static void printSum() {
@@ -153,15 +160,6 @@ public class PyramidSlideDown {
         private static void printLongestSlideDown() {
             System.out.println(Arrays.stream(longestSlideDownNodes)
                     .map(Node::toString).collect(joining(", ")));
-        }
-
-        public boolean isLeaf() {
-            return left == null && right == null;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%d", data.value);
         }
     }
 
