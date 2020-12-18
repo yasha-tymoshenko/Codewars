@@ -57,7 +57,7 @@ public class PyramidSlideDown {
         int row;
         int col;
 
-        public Data(int row, int col, int value) {
+        public Data(int value, int row, int col) {
             this.row = row;
             this.col = col;
             this.value = value;
@@ -69,7 +69,7 @@ public class PyramidSlideDown {
                 LinkedList<Data> dataList = new LinkedList<>();
                 dataMap.put(i, dataList);
                 for (int j = 0; j < p[i].length; j++) {
-                    Data data = new Data(i, j, p[i][j]);
+                    Data data = new Data(p[i][j], i, j);
                     dataList.add(data);
                 }
             }
