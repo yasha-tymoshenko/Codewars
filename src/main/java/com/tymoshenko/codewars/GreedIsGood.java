@@ -35,7 +35,6 @@ import static java.util.stream.Collectors.groupingBy;
  * If you mutate the input, you will not be able to pass all the tests.
  */
 public class GreedIsGood {
-
     private GreedIsGood() {
     }
 
