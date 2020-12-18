@@ -2,8 +2,6 @@ package com.tymoshenko.codewars;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.joining;
-
 /**
  * 4 kyu
  * <p>
@@ -37,7 +35,6 @@ import static java.util.stream.Collectors.joining;
  */
 public class PyramidSlideDown {
 
-    private static Node[] longestSlideDownNodes;
     private static Map<Integer, List<Node>> nodeMap;
 
     private PyramidSlideDown() {
@@ -45,9 +42,8 @@ public class PyramidSlideDown {
 
     public static int longestSlideDown(int[][] pyramid) {
         initNodes(pyramid);
-        longestSlideDownNodes = new Node[pyramid.length];
-        Node tree = Node.toTree(pyramid);
-        return Node.maxSum(tree, 0);
+        Node.toTree(pyramid);
+        return Node.longestSlideDown();
     }
 
     private static void initNodes(int[][] p) {
@@ -100,16 +96,33 @@ public class PyramidSlideDown {
         Node left;
         Node right;
 
+        int distance;
+
         public Node(Data data) {
             this.data = data;
+            this.distance = data.value;
         }
 
         private static Node getNode(int i, int j) {
             return nodeMap.get(i).get(j);
         }
 
-        public boolean isLeaf() {
-            return left == null && right == null;
+        public int maxParentValue() {
+            List<Node> olderNodes = nodeMap.get(data.row - 1);
+            return olderNodes.stream()
+                    .filter(olderNode -> olderNode.left.equals(this) || olderNode.right.equals(this))
+                    .mapToInt(olderNode -> olderNode.distance)
+                    .max().orElse(0);
+        }
+
+        @Override
+        public int hashCode() {
+            return data.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this.data.equals(((Node) obj).data);
         }
 
         @Override
@@ -117,10 +130,9 @@ public class PyramidSlideDown {
             return String.format("%d", data.value);
         }
 
-        static Node toTree(int[][] pyramid) {
+        static void toTree(int[][] pyramid) {
             Node root = getNode(0, 0);
             addChildren(root, pyramid);
-            return root;
         }
 
         static void addChildren(Node node, int[][] pyramid) {
@@ -137,29 +149,17 @@ public class PyramidSlideDown {
             }
         }
 
-        static int maxSum(Node node, int nodeHeight) {
-            if (node == null) {
-                return 0;
+        static int longestSlideDown() {
+            for (int i = 1; i < nodeMap.size(); i++) {
+                List<Node> nodes = nodeMap.get(i);
+                for (Node node : nodes) {
+                    node.distance = node.data.value + node.maxParentValue();
+                }
             }
-            longestSlideDownNodes[nodeHeight] = node;
-            if (node.isLeaf()) {
-                printSum();
-                printLongestSlideDown();
-                return node.data.value;
-            }
-            int sumLeft = maxSum(node.left, nodeHeight + 1);
-            int sumRight = maxSum(node.right, nodeHeight + 1);
-            return node.data.value + Math.max(sumLeft, sumRight);
-        }
-
-        private static void printSum() {
-            System.out.print("Sum=" + Arrays.stream(longestSlideDownNodes)
-                    .mapToInt(n -> n.data.value).sum());
-        }
-
-        private static void printLongestSlideDown() {
-            System.out.println(" || " + Arrays.stream(longestSlideDownNodes)
-                    .map(Node::toString).collect(joining(", ")));
+            return nodeMap.get(nodeMap.size() - 1)
+                    .stream()
+                    .mapToInt(node -> node.distance)
+                    .max().orElse(-1);
         }
     }
 
