@@ -39,4 +39,15 @@ class PyramidSlideDownTest {
         assertEquals(1074, PyramidSlideDown.longestSlideDown(test));
     }
 
+    @Test
+    void testSmall() {
+        int[][] test = new int[][]{
+                {75},
+                {95, 64},
+                {17, 47, 82},
+                {18, 35, 87, 10}
+        };
+        assertEquals(308, PyramidSlideDown.longestSlideDown(test));
+
+    }
 }

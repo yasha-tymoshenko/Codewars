@@ -47,7 +47,7 @@ public class PyramidSlideDown {
         initNodes(pyramid);
         longestSlideDownNodes = new Node[pyramid.length];
         Node tree = Node.toTree(pyramid);
-        return Node.sum(tree, 0);
+        return Node.maxSum(tree, 0);
     }
 
     private static void initNodes(int[][] p) {
@@ -137,7 +137,7 @@ public class PyramidSlideDown {
             }
         }
 
-        static int sum(Node node, int nodeHeight) {
+        static int maxSum(Node node, int nodeHeight) {
             if (node == null) {
                 return 0;
             }
@@ -147,18 +147,18 @@ public class PyramidSlideDown {
                 printLongestSlideDown();
                 return node.data.value;
             }
-            int sumLeft = sum(node.left, nodeHeight + 1);
-            int sumRight = sum(node.right, nodeHeight + 1);
+            int sumLeft = maxSum(node.left, nodeHeight + 1);
+            int sumRight = maxSum(node.right, nodeHeight + 1);
             return node.data.value + Math.max(sumLeft, sumRight);
         }
 
         private static void printSum() {
-            System.out.print("Sum = " + Arrays.stream(longestSlideDownNodes)
-                    .mapToInt(n -> n.data.value).sum() + " ");
+            System.out.print("Sum=" + Arrays.stream(longestSlideDownNodes)
+                    .mapToInt(n -> n.data.value).sum());
         }
 
         private static void printLongestSlideDown() {
-            System.out.println(Arrays.stream(longestSlideDownNodes)
+            System.out.println(" || " + Arrays.stream(longestSlideDownNodes)
                     .map(Node::toString).collect(joining(", ")));
         }
     }

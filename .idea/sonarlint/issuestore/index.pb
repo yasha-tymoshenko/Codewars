@@ -47,3 +47,7 @@ j
 :src/test/java/com/tymoshenko/codewars/GreedIsGoodTest.java,c/d/cd7a7c34e8058ead298096331fb2972e17ffce8c
 f
 6src/main/java/com/tymoshenko/codewars/GreedIsGood.java,c/b/cb08ddd366b7ef5782323dea06b1d1ec24b6252e
+o
+?src/test/java/com/tymoshenko/codewars/PyramidSlideDownTest.java,a/1/a19eb8fdee253a2021cbf847628843d672d9515c
+k
+;src/main/java/com/tymoshenko/codewars/PyramidSlideDown.java,9/b/9bdc58be40bf253f71e454a3d131542951c7931c
