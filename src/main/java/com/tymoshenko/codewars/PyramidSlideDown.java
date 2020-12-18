@@ -1,7 +1,5 @@
 package com.tymoshenko.codewars;
 
-import java.util.*;
-
 /**
  * 4 kyu
  * <p>
@@ -35,130 +33,34 @@ import java.util.*;
  */
 public class PyramidSlideDown {
 
-    private static Map<Integer, List<Node>> nodeMap;
-
     private PyramidSlideDown() {
     }
 
     public static int longestSlideDown(int[][] pyramid) {
-        initNodes(pyramid);
-        Node.toTree(pyramid);
-        return Node.longestSlideDown();
-    }
-
-    private static void initNodes(int[][] p) {
-        nodeMap = new HashMap<>();
-        for (int i = 0; i < p.length; i++) {
-            LinkedList<Node> nodes = new LinkedList<>();
-            nodeMap.put(i, nodes);
-            for (int j = 0; j < p[i].length; j++) {
-                Data data = new Data(p[i][j], i, j);
-                Node node = new Node(data);
-                nodes.add(node);
-            }
-        }
-    }
-
-    public static final class Data {
-
-        int value;
-        int row;
-        int col;
-
-        public Data(int value, int row, int col) {
-            this.row = row;
-            this.col = col;
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Data data = (Data) o;
-            return row == data.row && col == data.col && value == data.value;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(row, col, value);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("B-%d [%d, %d]. ", value, row, col);
-        }
-    }
-
-    public static final class Node {
-        Data data;
-
-        Node left;
-        Node right;
-
-        int distance;
-
-        public Node(Data data) {
-            this.data = data;
-            this.distance = data.value;
-        }
-
-        private static Node getNode(int i, int j) {
-            return nodeMap.get(i).get(j);
-        }
-
-        @Override
-        public int hashCode() {
-            return data.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this.data.equals(((Node) obj).data);
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%d", data.value);
-        }
-
-        static void toTree(int[][] pyramid) {
-            Node root = getNode(0, 0);
-            addChildren(root, pyramid);
-        }
-
-        static void addChildren(Node node, int[][] pyramid) {
-            int row = node.data.row;
-            int col = node.data.col;
-            int nextRow = row + 1;
-
-            node.left = getNode(nextRow, col);
-            node.right = getNode(nextRow, col + 1);
-
-            if (nextRow + 1 < pyramid.length) {
-                addChildren(node.left, pyramid);
-                addChildren(node.right, pyramid);
+        int[][] copy = new int[pyramid.length][];
+        for (int i = 0; i < pyramid.length; i++) {
+            copy[i] = new int[pyramid[i].length];
+            for (int j = 0; j < pyramid[i].length; j++) {
+                copy[i][j] = pyramid[i][j];
             }
         }
 
-        static int longestSlideDown() {
-            int max = 0;
-            for (int i = 0; i < nodeMap.size(); i++) {
-                List<Node> nodes = nodeMap.get(i);
-                for (Node node : nodes) {
-                    if (node.left != null && node.left.distance < node.left.data.value + node.distance) {
-                        node.left.distance = node.left.data.value + node.distance;
-                    }
-                    if (node.right != null && node.right.distance < node.right.data.value + node.distance) {
-                        node.right.distance = node.right.data.value + node.distance;
-                    }
-                    if (node.data.row == nodes.size() - 1 && node.distance > max) {
-                        max = node.distance;
-                    }
+        int max = 0;
+        for (int i = 0; i < pyramid.length; i++) {
+            for (int j = 0; j < pyramid[i].length; j++) {
+                if (i + 1 < pyramid.length) {
+                    // left child
+                    if (pyramid[i + 1][j] < copy[i + 1][j] + pyramid[i][j])
+                        pyramid[i + 1][j] = copy[i + 1][j] + pyramid[i][j];
+                    // right child
+                    if (pyramid[i + 1][j + 1] < copy[i + 1][j + 1] + pyramid[i][j])
+                        pyramid[i + 1][j + 1] = copy[i + 1][j + 1] + pyramid[i][j];
+                } else {
+                    max = Math.max(pyramid[i][j], max);
                 }
             }
-            return max;
         }
+        return max;
     }
 
 }

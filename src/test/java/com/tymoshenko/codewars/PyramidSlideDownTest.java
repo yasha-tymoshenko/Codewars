@@ -46,6 +46,13 @@ class PyramidSlideDownTest {
                 {95, 64},
                 {17, 47, 82},
                 {18, 35, 87, 10}
+
+                /**
+                 *     75
+                 *  170  139
+                 *187 217 221
+                 *   (217 / 139+47=186
+                */
         };
         assertEquals(308, PyramidSlideDown.longestSlideDown(test));
 
