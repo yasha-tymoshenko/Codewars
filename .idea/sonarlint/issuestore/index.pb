@@ -51,3 +51,15 @@ o
 ?src/test/java/com/tymoshenko/codewars/PyramidSlideDownTest.java,a/1/a19eb8fdee253a2021cbf847628843d672d9515c
 k
 ;src/main/java/com/tymoshenko/codewars/PyramidSlideDown.java,9/b/9bdc58be40bf253f71e454a3d131542951c7931c
+l
+<src/test/java/com/tymoshenko/codewars/TimeFormatterTest.java,2/3/231dcb42804211670dc90da6ccf29177580e6097
+h
+8src/main/java/com/tymoshenko/codewars/TimeFormatter.java,e/5/e548bf3af6e026f2aa752bb5c81f559a82824aee
+u
+Esrc/test/java/com/tymoshenko/codewars/MultipliersThreeOrFiveTest.java,9/b/9b4ffa13afcb530629dab9c27aee16efc65fe949
+q
+Asrc/main/java/com/tymoshenko/codewars/MultipliersThreeOrFive.java,3/4/343061876e2880953833b3e8461d13d12a752d31
+c
+3src/test/java/com/tymoshenko/codewars/UserTest.java,6/f/6f3c511de09a23b3e9678581eb04baf7a378e090
+_
+/src/main/java/com/tymoshenko/codewars/User.java,9/4/941ed909517976a4c437e9a2be7fae91cfbd9a10
