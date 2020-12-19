@@ -39,6 +39,7 @@ public class MorseCodeDecoder {
 
     static {
         morseDictionary = new LinkedHashMap<>();
+        // Letters
         morseDictionary.put(".-", "A");
         morseDictionary.put("-...", "B");
         morseDictionary.put("-.-.", "C");
@@ -65,6 +66,7 @@ public class MorseCodeDecoder {
         morseDictionary.put("-..-", "X");
         morseDictionary.put("-.--", "Y");
         morseDictionary.put("--..", "Z");
+        // Digits
         morseDictionary.put("-----", "0");
         morseDictionary.put(".----", "1");
         morseDictionary.put("..---", "2");
@@ -75,6 +77,14 @@ public class MorseCodeDecoder {
         morseDictionary.put("--...", "7");
         morseDictionary.put("---..", "8");
         morseDictionary.put("----.", "9");
+        // Punctuation
+        morseDictionary.put(".-.-.-", ".");
+        morseDictionary.put("--..--", ",");
+        morseDictionary.put("..--..", "?");
+        morseDictionary.put(".----.", "'");
+        morseDictionary.put("-.-.--", "!");
+        // Special codes
+        morseDictionary.put("...---...", "SOS");
     }
 
 }
