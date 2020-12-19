@@ -84,7 +84,11 @@ public class User {
 
     public void incProgress(int activity) {
         if (!ranks.containsKey(activity)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                    String.format("Codewars ranks must be in range [%d, %d], excluding zero.", FIRST_RANK, LAST_RANK));
+        }
+        if (rank >= LAST_RANK) {
+            return;
         }
         long score = calculateScore(activity);
         updateProgressAndRank(score);
@@ -105,19 +109,19 @@ public class User {
         return score;
     }
 
-    private boolean isActivityLowerThanRankByLevelOrMore(int activity, int level) {
-        return ranks.get(rank) - ranks.get(activity) >= level;
-    }
-
     private void updateProgressAndRank(long score) {
         if (score == 0 || rank == LAST_RANK) {
             return;
         }
         progress += score;
-        while (progress >= PROGRESS_PER_RANK && rank <= LAST_RANK) {
+        while (progress >= PROGRESS_PER_RANK && rank < LAST_RANK) {
             nextRank();
             refreshProgress();
         }
+    }
+
+    private boolean isActivityLowerThanRankByLevelOrMore(int activity, int level) {
+        return ranks.get(rank) - ranks.get(activity) >= level;
     }
 
     private void nextRank() {
