@@ -14,27 +14,21 @@ import static java.util.stream.Collectors.joining;
  */
 public class MorseCodeDecoder {
 
-    private static final String BLANK_STRING = "";
-    private static final String MORSE_LETTER_SEPARATOR = " ";
-    private static final String MORSE_WORD_SEPARATOR = MORSE_LETTER_SEPARATOR + "{3}";
-    private static final String ENGLISH_LETTER_SEPARATOR = BLANK_STRING;
-    private static final String ENGLISH_WORD_SEPARATOR = MORSE_LETTER_SEPARATOR;
-
     private static final Map<String, String> morseDictionary;
 
     public static String decode(String morseCode) {
         if (morseCode == null || morseCode.isBlank()) {
-            return BLANK_STRING;
+            return "";
         }
-        return Arrays.stream(split(morseCode, MORSE_WORD_SEPARATOR))
-                .map(encodedWord -> Arrays.stream(split(encodedWord, MORSE_LETTER_SEPARATOR))
-                        .map(encodedSymbol -> morseDictionary.getOrDefault(encodedSymbol, BLANK_STRING))
-                        .collect(joining(ENGLISH_LETTER_SEPARATOR)))
-                .collect(joining(ENGLISH_WORD_SEPARATOR));
+        return Arrays.stream(split(morseCode, " {3}"))
+                .map(encodedWord -> Arrays.stream(split(encodedWord, " "))
+                        .map(encodedSymbol -> morseDictionary.getOrDefault(encodedSymbol, ""))
+                        .collect(joining("")))
+                .collect(joining(" "));
     }
-
-    private static String[] split(String morseCode, String morseWordSeparator) {
-        return morseCode.trim().split(morseWordSeparator);
+˚
+    private static String[] split(String string, String separator) {
+        return string.trim().split(separator);
     }
 
     static {
