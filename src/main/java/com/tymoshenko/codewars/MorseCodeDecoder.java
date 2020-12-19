@@ -26,7 +26,7 @@ public class MorseCodeDecoder {
                         .collect(joining("")))
                 .collect(joining(" "));
     }
-˚
+
     private static String[] split(String string, String separator) {
         return string.trim().split(separator);
     }
