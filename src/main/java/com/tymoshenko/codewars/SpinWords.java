@@ -1,41 +1,27 @@
 package com.tymoshenko.codewars;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class SpinWords {
 
     private static final String ANY_WHITESPACE_REGEX = "\\s";
 
     public String spinWords(String sentence) {
-        String reversedSentence = "";
-        if (sentence != null) {
-            String[] words = sentence.split(ANY_WHITESPACE_REGEX);
-            reversedSentence = reverseWords(words);
-        }
-        return reversedSentence;
-    }
-
-    @NotNull
-    private String reverseWords(String[] words) {
-        List<String> reversedWords = new LinkedList<>();
-        for (String word : words) {
-            reversedWords.add(reverse(word));
-        }
-        return String.join(" ", reversedWords);
+        return sentence == null ? "" : Arrays.stream(
+                sentence.split(ANY_WHITESPACE_REGEX))
+                .map(this::reverse)
+                .collect(Collectors.joining(" "));
     }
 
     private String reverse(String word) {
-        String reversedWord = word;
-        if (word == null || word.equals("") || word.trim().equals("")) {
-            reversedWord = "";
-        } else if (word.length() >= 5) {
-            StringBuilder sb = new StringBuilder(word);
-            reversedWord = sb.reverse().toString();
+        if (word == null || word.isBlank()) {
+            return "";
+        } else if (word.length() < 5) {
+            return word;
+        } else {
+            return new StringBuilder(word).reverse().toString();
         }
-        return reversedWord;
     }
 
 }
