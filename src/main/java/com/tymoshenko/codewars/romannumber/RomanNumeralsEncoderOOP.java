@@ -1,10 +1,10 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.romannumber;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tymoshenko.codewars.RomanDigit.*;
+import static com.tymoshenko.codewars.romannumber.RomanDigit.*;
 
 public class RomanNumeralsEncoderOOP implements DecimalToRomanConverter {
 
@@ -84,11 +84,9 @@ enum RomanDigit {
     int times(int number) {
         return this.toDecimal() * number;
     }
-
 }
 
 final class RomanNumber {
-
     static RomanNumber zero() {
         return new RomanNumber(RomanDigit.ZERO);
     }
@@ -140,5 +138,4 @@ final class RomanNumber {
                 .map(RomanDigit::toString)
                 .collect(Collectors.joining());
     }
-
 }

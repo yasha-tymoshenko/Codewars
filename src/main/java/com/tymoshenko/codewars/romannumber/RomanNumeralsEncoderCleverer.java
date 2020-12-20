@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.romannumber;
 
 @SuppressWarnings("unused")
 public class RomanNumeralsEncoderCleverer implements DecimalToRomanConverter {

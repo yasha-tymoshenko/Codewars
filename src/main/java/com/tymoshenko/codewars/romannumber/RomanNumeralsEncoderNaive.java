@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.romannumber;
 
 import java.util.Arrays;
 import java.util.List;

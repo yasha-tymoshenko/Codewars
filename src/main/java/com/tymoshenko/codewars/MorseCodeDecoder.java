@@ -1,6 +1,8 @@
 package com.tymoshenko.codewars;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
 

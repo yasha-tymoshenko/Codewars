@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.romannumber;
 
 /**
  * https://blog.prepscholar.com/roman-numerals-converter
