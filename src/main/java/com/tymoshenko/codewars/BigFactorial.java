@@ -6,9 +6,6 @@ import java.math.BigInteger;
  * 4 kyu
  *
  * https://www.codewars.com/kata/557f6437bf8dcdd135000010/train/java
- *
- * NOTES:
- * The use of BigInteger or BigNumber functions has been disabled, this requires a complex solution.
  */
 public class BigFactorial {
 
