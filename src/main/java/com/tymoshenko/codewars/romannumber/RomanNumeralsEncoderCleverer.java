@@ -5,20 +5,10 @@ public class RomanNumeralsEncoderCleverer implements DecimalToRomanConverter {
 
     @Override
     public String solution(int n) {
-        /*
-         * E.g.
-         * n = 4056
-         *
-         * ones = 6
-         * tens = 5
-         * hundreds = 0
-         * thousands = 4
-         */
         int ones = n % 10;
         int tens = (n % 100) / 10;
         int hundreds = (n % 1000) / 100;
         int thousands = n / 1000;
-
         return thousandsToRoman(thousands)
                 .append(toRoman(hundreds, "C", "D", "M"))
                 .append(toRoman(tens, "X", "L", "C"))
@@ -60,5 +50,4 @@ public class RomanNumeralsEncoderCleverer implements DecimalToRomanConverter {
         }
         return sb;
     }
-
 }

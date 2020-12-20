@@ -3,35 +3,6 @@ package com.tymoshenko.codewars.romannumber;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Create a function taking a positive integer as its parameter and returning a string containing the Roman Numeral
- * representation of that integer.
- * <p>
- * Modern Roman numerals are written by expressing each digit separately starting with the left most digit and skipping
- * any digit with a value of zero.
- * <p>
- * In Roman numerals 1990 is rendered:
- * 1000=M, 900=CM, 90=XC; resulting in MCMXC.
- * 2008 is written as 2000=MM, 8=VIII; or MMVIII.
- * 1666 uses each Roman symbol in descending order: MDCLXVI.
- * <p>
- * Example:
- * <p>
- * conversion.solution(1000); //should return "M"
- * Help:
- * <p>
- * Symbol    Value
- * I          1
- * V          5
- * X          10
- * L          50
- * C          100
- * D          500
- * M          1,000
- * Remember that there can't be more than 3 identical sfymbols in a row.
- * <p>
- * 1987 = MCMLXXXVII
- */
 @SuppressWarnings("unused")
 public class RomanNumeralsEncoderNaive implements DecimalToRomanConverter {
 
@@ -84,7 +55,7 @@ public class RomanNumeralsEncoderNaive implements DecimalToRomanConverter {
             final int decimalNumber = mantissa * (int) Math.pow(10, decade);
             String result = NOT_A_NUMBER.name();
             RomanNumber romanNumber;
-            if ((mantissa < 4 || (mantissa > 4 && mantissa < 9) ) && decade <= 3) {
+            if ((mantissa < 4 || (mantissa > 4 && mantissa < 9)) && decade <= 3) {
                 // 1,2,3 and 5,6,7,8 and x10, x100, x1000.
                 romanNumber = mantissa < 4 ? ONES.get(decade) : FIVES.get(decade);
                 result = addOnesToRomanNumber(romanNumber, decimalNumber, decade);

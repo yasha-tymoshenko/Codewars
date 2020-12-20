@@ -55,26 +55,26 @@ import static org.junit.jupiter.api.Assertions.*;
  * user.progress; // => 0 // progress is now zero
  * user.rank; // => -7 // rank was upgraded to -7
  */
-class UserTest {
+class CodewarsUserRankingTest {
 
     @Test
     void incProgress() {
-        User user = new User();
-        assertEquals(-8, user.rank);
-        assertEquals(0, user.progress);
+        CodewarsUserRanking codewarsUserRanking = new CodewarsUserRanking();
+        assertEquals(-8, codewarsUserRanking.rank);
+        assertEquals(0, codewarsUserRanking.progress);
 
-        user.incProgress(-7);
-        assertEquals(10, user.progress);
+        codewarsUserRanking.incProgress(-7);
+        assertEquals(10, codewarsUserRanking.progress);
 
-        user.incProgress(-5);
-        assertEquals(0, user.progress);
-        assertEquals(-7, user.rank);
+        codewarsUserRanking.incProgress(-5);
+        assertEquals(0, codewarsUserRanking.progress);
+        assertEquals(-7, codewarsUserRanking.rank);
 
-        user.rank = -1;
-        user.progress = 0;
-        user.incProgress(1);
-        assertEquals(-1, user.rank);
-        assertEquals(10, user.progress);
+        codewarsUserRanking.rank = -1;
+        codewarsUserRanking.progress = 0;
+        codewarsUserRanking.incProgress(1);
+        assertEquals(-1, codewarsUserRanking.rank);
+        assertEquals(10, codewarsUserRanking.progress);
     }
 
 }

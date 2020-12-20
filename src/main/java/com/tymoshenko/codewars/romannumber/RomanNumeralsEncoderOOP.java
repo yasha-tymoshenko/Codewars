@@ -23,7 +23,7 @@ public class RomanNumeralsEncoderOOP implements DecimalToRomanConverter {
 
     private RomanNumber toRoman(int thousands) {
         RomanNumber roman = RomanNumber.zero();
-        while (roman.isLessThan(M.times(thousands))) {
+        while (roman.isLessThan(M.multiply(thousands))) {
             roman.addRight(M);
         }
         return roman;
@@ -42,7 +42,7 @@ public class RomanNumeralsEncoderOOP implements DecimalToRomanConverter {
                 if (number >= 5) {
                     roman.addRight(fifth);
                 }
-                while (roman.isLessThan(first.times(number))) {
+                while (roman.isLessThan(first.multiply(number))) {
                     roman.addRight(first);
                 }
                 return roman;
@@ -81,7 +81,7 @@ enum RomanDigit {
         return decimalValue;
     }
 
-    int times(int number) {
+    int multiply(int number) {
         return this.toDecimal() * number;
     }
 }

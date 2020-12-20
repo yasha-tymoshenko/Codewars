@@ -7,32 +7,14 @@ import java.util.Map;
  * 4 kyu
  * <p>
  * https://www.codewars.com/kata/51fda2d95d6efda45e00004e/train/java
- *
- * See the description on the test.
- *
  */
-public class User {
+public class CodewarsUserRanking {
     private static final int FIRST_RANK = -8;
     private static final int LAST_RANK = 8;
     private static final int PROGRESS_PER_RANK = 100;
     private static final Map<Integer, Integer> ranks;
 
-    static {
-//        ranks = IntStream.rangeClosed(FIRST_RANK, LAST_RANK)
-//                .boxed()
-//                .filter(i -> i != 0)
-//                .collect(groupingBy(rank -> rank, counting())); - Why does counting return 1 for each rank instead of incrementing it by 1 ?
-        ranks = new HashMap<>();
-        int rankIndex = 1;
-        for (int codewarsRank = FIRST_RANK; codewarsRank <= LAST_RANK; codewarsRank++) {
-            if (codewarsRank == 0) {
-                continue;
-            }
-            ranks.put(codewarsRank, rankIndex++);
-        }
-    }
-
-    // Using package private because of Codewars automated tests.
+    // Using package-private instead of private because of Codewars automated tests.
     int rank = FIRST_RANK;
     int progress = 0;
 
@@ -91,6 +73,17 @@ public class User {
             progress = 0;
         } else {
             progress -= PROGRESS_PER_RANK;
+        }
+    }
+
+    static {
+        ranks = new HashMap<>();
+        int rankIndex = 1;
+        for (int codewarsRank = FIRST_RANK; codewarsRank <= LAST_RANK; codewarsRank++) {
+            if (codewarsRank == 0) {
+                continue;
+            }
+            ranks.put(codewarsRank, rankIndex++);
         }
     }
 }

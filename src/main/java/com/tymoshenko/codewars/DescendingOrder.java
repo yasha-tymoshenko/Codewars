@@ -10,9 +10,6 @@ import java.util.stream.Collectors;
  */
 public class DescendingOrder {
 
-    private DescendingOrder() {
-    }
-
     public static int sortDesc(final int num) {
         return Integer.parseInt(Integer.toString(num)
                         .chars()
