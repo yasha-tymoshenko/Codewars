@@ -34,9 +34,6 @@ import java.util.Arrays;
  */
 public class Line {
 
-    private Line() {
-    }
-
     /*
             N from 1 to Integer.MAX_NUMBER
     */

@@ -15,9 +15,6 @@ import java.util.stream.Collectors;
  */
 public class TimeFormatter {
 
-    private TimeFormatter() {
-    }
-
     public static String formatDuration(int seconds) {
         if (seconds == 0) {
             return "now";

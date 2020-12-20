@@ -8,9 +8,6 @@ import java.util.stream.IntStream;
  */
 public class MultiplicationTable {
 
-    private MultiplicationTable() {
-    }
-
     public static String multiTable(int num) {
         return IntStream.rangeClosed(1, 10)
                 .mapToObj(i -> String.format("%d * %d = %d", i, num, i * num))
