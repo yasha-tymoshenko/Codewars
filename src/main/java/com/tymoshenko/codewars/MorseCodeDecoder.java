@@ -23,7 +23,7 @@ public class MorseCodeDecoder {
         return Arrays.stream(split(morseCode, " {3}"))
                 .map(encodedWord -> Arrays.stream(split(encodedWord, " "))
                         .map(encodedSymbol -> morseDictionary.getOrDefault(encodedSymbol, ""))
-                        .collect(joining("")))
+                        .collect(joining()))
                 .collect(joining(" "));
     }
 
