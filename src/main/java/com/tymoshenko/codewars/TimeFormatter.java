@@ -21,7 +21,7 @@ public class TimeFormatter {
         }
         String suffix = seconds < 0 ? " ago" : "";
         return Arrays.stream(TimeUnit.values())
-                .map(timeUnit -> formatTime(seconds > 0 ? seconds : -1 * seconds, timeUnit))
+                .map(timeUnit -> formatTime(Math.abs(seconds), timeUnit))
                 .filter(durationFormatted -> !durationFormatted.isBlank())
                 .collect(Collectors.joining(", ", "", suffix))
                 .replaceAll("(.+), (.+?)$", "$1 and $2");
