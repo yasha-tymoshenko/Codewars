@@ -28,4 +28,8 @@ class TimeFormatterTest {
         assertEquals("1 hour, 1 minute and 2 seconds", TimeFormatter.formatDuration(3662));
     }
 
+    @Test
+    void negativeDuration() {
+        assertEquals("5 minutes ago", TimeFormatter.formatDuration(-5 * 60));
+    }
 }

@@ -19,10 +19,11 @@ public class TimeFormatter {
         if (seconds == 0) {
             return "now";
         }
+        String suffix = seconds < 0 ? " ago" : "";
         return Arrays.stream(TimeUnit.values())
-                .map(timeUnit -> formatTime(seconds, timeUnit))
+                .map(timeUnit -> formatTime(seconds > 0 ? seconds : -1 * seconds, timeUnit))
                 .filter(durationFormatted -> !durationFormatted.isBlank())
-                .collect(Collectors.joining(", "))
+                .collect(Collectors.joining(", ", "", suffix))
                 .replaceAll("(.+), (.+?)$", "$1 and $2");
     }
 
