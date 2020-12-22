@@ -48,7 +48,7 @@ public class BinomialExpansion {
                 continue;
             }
             if (i == 0) {
-                sb.append(coefficient(k)).append(x).append(power(n - i));
+                sb.append(coefficient(k)).append(x).append(power(n));
             } else if (i == n) {
                 sb.append(addendum(bi));
             } else {
@@ -69,7 +69,7 @@ public class BinomialExpansion {
     }
 
     public static int pascalCoefficient(int row, int col) {
-        if (row == 0 || col == 0 || col == row) {
+        if (col == 0 || col == row) {
             return 1;
         }
         return pascalCoefficient(row - 1, col - 1) + pascalCoefficient(row - 1, col);
