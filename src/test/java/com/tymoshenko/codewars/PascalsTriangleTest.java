@@ -31,4 +31,8 @@ class PascalsTriangleTest {
         assertArrayEquals(new int[]{1, 4, 6, 4, 1}, PascalsTriangle.coefficients(4));
     }
 
+    @Test
+    void row8() {
+        assertArrayEquals(new int[] {1, 8, 28, 56, 70, 56, 28, 8, 1}, PascalsTriangle.coefficients(8));
+    }
 }
