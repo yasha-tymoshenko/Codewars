@@ -60,6 +60,7 @@ class BinomialExpansionTest {
 
     @Test
     void testBigN() {
-        assertEquals("", BinomialExpansion.expand("(9j-9)^8"));
+        assertEquals("43046721j^8-344373768j^7+1205308188j^6-2410616376j^5+3013270470j^4-2410616376j^3+" +
+                "1205308188j^2-344373768j+43046721", BinomialExpansion.expand("(9j-9)^8"));
     }
 }

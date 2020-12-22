@@ -1,6 +1,5 @@
 package com.tymoshenko.codewars;
 
-import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,19 +41,18 @@ public class BinomialExpansion {
         if (n == 1) return coefficient(a) + x + addendum(b);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i <= n; i++) {
-            BigDecimal ai = BigDecimal.valueOf(a).pow(n - i);
-            BigDecimal bi = BigDecimal.valueOf(b).pow(i);
-            BigDecimal k = ai.multiply(bi).multiply(BigDecimal.valueOf(pascalCoefficient(n, i)));
+            long ai = (long) Math.pow(a, (double) n - i);
+            long bi = (long) Math.pow(b, i);
+            long k = pascalCoefficient(n, i) * ai * bi;
+            if (k == 0) {
+                continue;
+            }
             if (i == 0) {
-                if (!k.equals(BigDecimal.ZERO)) {
-                    sb.append(coefficient(k)).append(x).append(power(n - i));
-                }
+                sb.append(coefficient(k)).append(x).append(power(n - i));
             } else if (i == n) {
                 sb.append(addendum(bi));
             } else {
-                if (!k.equals(BigDecimal.ZERO)) {
-                    sb.append(addendum(k)).append(x).append(power(n - i));
-                }
+                sb.append(addendum(k)).append(x).append(power(n - i));
             }
         }
         return sb.toString();
@@ -77,34 +75,17 @@ public class BinomialExpansion {
         return pascalCoefficient(row - 1, col - 1) + pascalCoefficient(row - 1, col);
     }
 
-    private static String coefficient(int k) {
+    private static String coefficient(long k) {
         if (k == 1) return "";
         if (k == -1) return "-";
-        return Integer.toString(k);
+        return Long.toString(k);
     }
 
-    private static String coefficient(BigDecimal k) {
-        if (k.equals(BigDecimal.ONE)) {
-            return "";
-        }
-        if (k.equals(BigDecimal.valueOf(-1))) {
-            return "-";
-        }
-        return k.toString();
-    }
-
-    private static String addendum(int a) {
+    private static String addendum(long a) {
         if (a == 0) {
             return "";
         }
         return (a < 0 ? "" : "+") + a;
-    }
-
-    private static String addendum(BigDecimal a) {
-        if (a.equals(BigDecimal.ZERO)) {
-            return "";
-        }
-        return (a.signum() < 0 ? "" : "+") + a.toString();
     }
 
     /**
