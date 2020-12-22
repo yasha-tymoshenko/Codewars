@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.morse;
 
 import org.junit.jupiter.api.Test;
 
