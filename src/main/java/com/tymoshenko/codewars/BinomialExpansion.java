@@ -27,10 +27,10 @@ public class BinomialExpansion {
         Pattern pattern = Pattern.compile("\\((?<a>-?\\d*)(?<x>[a-zA-Z])(?<b>\\s*[+-]\\s*\\d+)\\)\\^(?<n>\\d+)");
         Matcher matcher = pattern.matcher(expr);
         if (matcher.matches()) {
-            a = numberToCoefficient(matcher.group("a"));
+            a = toCoefficient(matcher.group("a"));
             x = matcher.group("x").charAt(0);
-            b = numberToCoefficient(matcher.group("b"));
-            n = numberToCoefficient(matcher.group("n"));
+            b = toCoefficient(matcher.group("b"));
+            n = toCoefficient(matcher.group("n"));
         } else {
             throw new IllegalArgumentException("Unable to parse the input.");
         }
@@ -43,7 +43,7 @@ public class BinomialExpansion {
         for (int i = 0; i <= n; i++) {
             long ai = (long) Math.pow(a, (double) n - i);
             long bi = (long) Math.pow(b, i);
-            long k = pascalCoefficient(n, i) * ai * bi;
+            long k = pascalTriangle(n, i) * ai * bi;
             if (k == 0) {
                 continue;
             }
@@ -58,21 +58,15 @@ public class BinomialExpansion {
         return sb.toString();
     }
 
-    private static int numberToCoefficient(String str) {
-        if (str == null || str.isBlank()) {
-            return 1;
-        }
-        if (str.equals("-")) {
-            return -1;
-        }
-        return Integer.parseInt(str);
+    public static int pascalTriangle(int row, int col) {
+        if (col == 0 || col == row) return 1;
+        return pascalTriangle(row - 1, col - 1) + pascalTriangle(row - 1, col);
     }
 
-    public static int pascalCoefficient(int row, int col) {
-        if (col == 0 || col == row) {
-            return 1;
-        }
-        return pascalCoefficient(row - 1, col - 1) + pascalCoefficient(row - 1, col);
+    private static int toCoefficient(String str) {
+        if (str == null || str.isBlank()) return 1;
+        if (str.equals("-")) return -1;
+        return Integer.parseInt(str);
     }
 
     private static String coefficient(long k) {
@@ -82,20 +76,12 @@ public class BinomialExpansion {
     }
 
     private static String addendum(long a) {
-        if (a == 0) {
-            return "";
-        }
+        if (a == 0) return "";
         return (a < 0 ? "" : "+") + a;
     }
 
-    /**
-     * @param n >= 0
-     */
     private static String power(int n) {
-        if (n <= 1) {
-            return "";
-        }
+        if (n <= 1) return "";
         return "^" + n;
     }
-
 }
