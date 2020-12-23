@@ -109,7 +109,7 @@ class MazeParser {
 
     private Queue<Vertex> adjacentCells(Vertex xy) {
         return Arrays.stream(new Vertex[]{moveNorth(xy), moveSouth(xy), moveWest(xy), moveEast(xy)})
-                .filter(Vertex::isPassable)
+                .filter(Vertex::isAccessible)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
@@ -150,8 +150,8 @@ class MazeParser {
 
 class Vertex implements Comparable<Vertex> {
     static final int INFINITY = 10_000_000;
-    static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1, -1);
-    static final Vertex WALL = new Vertex(-2, -2, -2);
+    static final Vertex WALL = new Vertex(-1, -1, -1);
+    static final Vertex OUT_OF_BOUNDS = new Vertex(-2, -2, -2);
 
     private final int x;
     private final int y;
@@ -195,7 +195,7 @@ class Vertex implements Comparable<Vertex> {
         return compare == 0 ? Integer.compare(y, o.getY()) : compare;
     }
 
-    public boolean isPassable() {
+    public boolean isAccessible() {
         return !(this.equals(OUT_OF_BOUNDS) || this.equals(WALL));
     }
 
