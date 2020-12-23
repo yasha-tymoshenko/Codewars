@@ -36,4 +36,24 @@ class PathFinderTest {
         assertEquals(10, PathFinder.pathFinder(c), c);
         assertEquals(-1, PathFinder.pathFinder(d), d);
     }
+
+    @Test
+    void snakes() {
+
+        String maze =
+                ".W...W...W...\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                ".W.W.W.W.W.W.\n" +
+                "...W...W...W.";
+        assertEquals(96, PathFinder.pathFinder(maze), maze);
+    }
 }

@@ -1,9 +1,9 @@
 package com.tymoshenko.codewars;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.lang.System.out;
 
 /**
  * 4 kyu
@@ -30,65 +30,60 @@ public class PathFinder {
      */
     public static int pathFinder(String maze) {
         PathFinder pathFinder = new PathFinder();
-        pathFinder.parse(maze);
-        out.println("solutions");
-        Vertex begin =  new Vertex(pathFinder.n - 1, pathFinder.n - 1);
-        Vertex end = new Vertex(0, 0);
-        return pathFinder.dejkstra(begin, end, new LinkedList<>());
-    }
-
-    private void parse(String maze) {
         String[] mazeRows = maze.split("\n");
-        n = mazeRows.length;
-        char[][] mazze = new char[n][n];
-        for (int i = 0; i < n; i++) {
+        pathFinder.n = mazeRows.length;
+        char[][] mazze = new char[pathFinder.n][pathFinder.n];
+        for (int i = 0; i < pathFinder.n; i++) {
             mazze[i] = mazeRows[i].toCharArray();
         }
         MazeParser parser = new MazeParser(mazze);
-        this.adjacentVertexesMap = parser.parse();
+        pathFinder.adjacentVertexesMap = parser.parse();
+        Vertex begin = parser.vertexMap.get(String.format("%4d%4d", 0, 0));
+        Vertex end = parser.vertexMap.get(String.format("%4d%4d", pathFinder.n -  1, pathFinder.n-1));
+        return pathFinder.dejkstra(begin, end);
     }
 
-    private int dejkstra(Vertex start, Vertex end, List<Vertex> path) {
+    private int dejkstra(Vertex start, Vertex end) {
         start.distance = 0;
-        path.add(start);
 
-        adjacentVertexesMap.keySet().stream()
-                .filter(v -> !v.equals(start))
-                .forEach(v -> v.distance = Integer.MAX_VALUE);
+        showAdj();
 
-        List<Vertex> visited = new LinkedList<>();
-        List<Vertex> unvisited = new LinkedList<>();
-
-        unvisited.add(end);
-
-        // While exists unvisited
+        visitNeighbours(start);
+        Queue<Vertex> unvisited = new LinkedList<>(getNeighbours(start));
         while (!unvisited.isEmpty()) {
-            Vertex nearest = getNearestNeighbour(unvisited);
-            unvisited.remove(nearest);
-
-            for (Vertex neighbour : getNeighbours(nearest)) {
-                if (!visited.contains(neighbour)) {
-                    if (neighbour.distance < nearest.distance + 1) {
-                        neighbour.distance = nearest.distance + 1;
-                        unvisited.add(neighbour);
-                    }
-                }
-            }
-
-            visited.add(nearest);
+            Vertex next = unvisited.poll();
+            visitNeighbours(next);
+            Queue<Vertex> neighbours = getNeighbours(next);
+            unvisited.addAll(neighbours.stream().filter(neighbour -> !neighbour.visited).collect(Collectors.toList()));
         }
 
-        return visited.stream().filter(start::equals).findAny().orElse(Vertex.WALL).distance;
+        System.out.println("\nNot visited:");
+        adjacentVertexesMap.keySet().stream()
+                .filter(v -> !v.visited)
+                .forEach(v -> System.out.println(v + " " + v.distance));
+        int distance = end.distance;
+        return distance >= 10_000 ? -1 : distance;
     }
 
-    private Vertex getNearestNeighbour(List<Vertex> list) {
-        Vertex next = list.get(0);
-        for (Vertex vertex : list) {
-            if (vertex.distance < next.distance) {
-                next = vertex;
+    private void showAdj() {
+        System.out.println("Adjacent map:");
+        adjacentVertexesMap.entrySet()
+                .forEach(e -> System.out.println(e.getKey() + " " + e.getValue().stream().map(Vertex::toString).collect(Collectors.joining(","))));
+    }
+
+    private void visitNeighbours(Vertex v) {
+        if (v.visited) {
+            return;
+        }
+        Queue<Vertex> neighbours = getNeighbours(v);
+        while (!neighbours.isEmpty()) {
+            Vertex neighbour = neighbours.poll();
+            int distanceToNeighbour = v.distance + 1;
+            if (neighbour.distance > distanceToNeighbour) {
+                neighbour.distance = distanceToNeighbour;
             }
         }
-        return next;
+        v.visited = true;
     }
 
     private Queue<Vertex> getNeighbours(Vertex xy) {
@@ -98,27 +93,27 @@ public class PathFinder {
 
 class MazeParser {
     private final char[][] maze;
+    Map<String, Vertex> vertexMap;
 
     public MazeParser(char[][] maze) {
         this.maze = maze;
     }
 
     Map<Vertex, Queue<Vertex>> parse() {
-        Map<Vertex, Queue<Vertex>> adjacentVertexesMap = new LinkedHashMap<>();
+        vertexMap = new HashMap<>();
+        Map<Vertex, Queue<Vertex>> adjacentVertexesMap = new TreeMap<>();
         Vertex xy;
-        out.println("Paths: ");
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze.length; j++) {
                 if (maze[i][j] != 'W') {
                     xy = new Vertex(i, j);
-                    Queue<Vertex> adj = adjacentCells(xy);
-                    out.println("(" + i + "," + j + ")= " + adj.stream().filter(Objects::nonNull)
-                            .map(Vertex::toString)
-                            .collect(Collectors.joining("; "))
-                    );
-                    adjacentVertexesMap.put(xy, adj);
+                    vertexMap.put(String.format("%4d%4d", i, j), xy);
                 }
             }
+        }
+        for (Vertex vertex : vertexMap.values()) {
+            Queue<Vertex> adj = adjacentCells(vertex);
+            adjacentVertexesMap.put(vertex, adj);
         }
         return adjacentVertexesMap;
     }
@@ -167,22 +162,24 @@ class MazeParser {
         } else if (maze[nextX][nextY] == 'W') {
             return Vertex.WALL;
         } else {
-            return new Vertex(nextX, nextY);
+            return vertexMap.get(String.format("%4d%4d", nextX, nextY));
         }
     }
 }
 
-class Vertex {
+class Vertex implements Comparable<Vertex> {
     static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1);
     static final Vertex WALL = new Vertex(-2, -2);
 
     static {
         WALL.distance = -1;
+        OUT_OF_BOUNDS.distance = Integer.MAX_VALUE;
     }
 
     int x;
     int y;
-    int distance;
+    int distance = 10_000;
+    boolean visited = false;
 
     public Vertex(int x, int y) {
         this.x = x;
@@ -209,6 +206,12 @@ class Vertex {
     @Override
     public String toString() {
         return "(" + x + ", " + y + ')';
+    }
+
+    @Override
+    public int compareTo(@NotNull Vertex o) {
+        int compare = Integer.compare(x, o.x);
+        return compare == 0 ? Integer.compare(y, o.y) : compare;
     }
 }
 
