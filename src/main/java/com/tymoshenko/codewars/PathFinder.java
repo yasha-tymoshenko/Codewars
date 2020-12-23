@@ -1,6 +1,7 @@
 package com.tymoshenko.codewars;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 4 kyu
@@ -15,7 +16,7 @@ import java.util.*;
  * Empty positions are marked ..
  * Walls are marked W.
  * Start and exit positions are guaranteed to be empty in all test cases.
- *
+ * <p>
  * TODO refactor:
  * 1. Make shorter.
  * 2. Remove nested classes.
@@ -34,43 +35,39 @@ public class PathFinder {
         PathFinder pathFinder = new PathFinder();
         MazeParser parser = new MazeParser(maze);
         pathFinder.adjacentVertexesMap = parser.parse();
-        int mazeLength = parser.mazeLength;
-        Vertex begin = parser.vertexMap.get(String.format(FORMAT, 0, 0));
-        Vertex end = parser.vertexMap.get(String.format(FORMAT, mazeLength -  1, mazeLength-1));
-        return pathFinder.dejkstra(begin, end);
+        Vertex start = parser.getVertex(0, 0);
+        Vertex finish = parser.getVertex(parser.getMazeLength() - 1, parser.getMazeLength() - 1);
+        return pathFinder.findShortestPath(start, finish);
     }
 
-    private int dejkstra(Vertex start, Vertex end) {
-        start.distance = 0;
+    private int findShortestPath(Vertex start, Vertex finish) {
+        start.setDistance(0);
         visitNeighbours(start);
         Queue<Vertex> unvisited = getNeighbours(start);
         while (!unvisited.isEmpty()) {
             Vertex next = unvisited.poll();
             visitNeighbours(next);
-            Queue<Vertex> neighbours = getNeighbours(next);
-            for (Vertex neighbour : neighbours) {
-                if (!neighbour.visited && !unvisited.contains(neighbour)) {
-                    unvisited.add(neighbour);
-                }
-            }
+            getNeighbours(next).stream()
+                    .filter(neighbour -> !neighbour.isVisited() && !unvisited.contains(neighbour))
+                    .forEach(unvisited::add);
         }
-        return end.visited ? end.distance : -1;
+        return finish.isVisited() ? finish.getDistance() : -1;
     }
 
     private void visitNeighbours(Vertex v) {
-        if (v.visited) {
+        if (v.isVisited()) {
             return;
         }
         Queue<Vertex> neighbours = getNeighbours(v);
         while (!neighbours.isEmpty()) {
             Vertex neighbour = neighbours.poll();
-            int distanceToNeighbour = v.distance + 1;
-            if (neighbour.distance > distanceToNeighbour) {
-                neighbour.distance = distanceToNeighbour;
+            int distanceToNeighbour = v.getDistance() + 1;
+            if (neighbour.getDistance() > distanceToNeighbour) {
+                neighbour.setDistance(distanceToNeighbour);
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
-        v.visited = true;
+        v.setVisited(true);
     }
 
     private Queue<Vertex> getNeighbours(Vertex xy) {
@@ -79,8 +76,8 @@ public class PathFinder {
 }
 
 class MazeParser {
-    final int mazeLength;
-    Map<String, Vertex> vertexMap;
+    private final int mazeLength;
+    private Map<String, Vertex> vertexMap;
     private final String[] mazeRows;
 
     public MazeParser(String maze) {
@@ -88,9 +85,8 @@ class MazeParser {
         mazeLength = mazeRows.length;
     }
 
-    Map<Vertex, Queue<Vertex>> parse() {
+    public Map<Vertex, Queue<Vertex>> parse() {
         vertexMap = new HashMap<>();
-        Map<Vertex, Queue<Vertex>> adjacentVertexesMap = new TreeMap<>();
         Vertex xy;
         int rowIndex = 0;
         for (String row : mazeRows) {
@@ -102,85 +98,80 @@ class MazeParser {
             }
             rowIndex++;
         }
+        return vertexMap.values().stream()
+                .collect(Collectors.toMap(vertex -> vertex, this::adjacentCells, (a, b) -> b, TreeMap::new));
+    }
 
-        for (Vertex vertex : vertexMap.values()) {
-            Queue<Vertex> adj = adjacentCells(vertex);
-            adjacentVertexesMap.put(vertex, adj);
-        }
-        return adjacentVertexesMap;
+    public int getMazeLength() {
+        return mazeLength;
+    }
+
+    public Vertex getVertex(int x, int y) {
+        return vertexMap.get(String.format(PathFinder.FORMAT, x, y));
     }
 
     private Queue<Vertex> adjacentCells(Vertex xy) {
-        Queue<Vertex> adj = new LinkedList<>();
-        Vertex nextXY = moveNorth(xy);
-
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveSouth(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveWest(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveEast(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        return adj;
+        return Arrays.stream(new Vertex[]{moveNorth(xy), moveSouth(xy), moveWest(xy), moveEast(xy)})
+                .filter(Vertex::isPassable)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     private Vertex moveNorth(Vertex xy) {
-        return tryMove(xy.x - 1, xy.y);
+        return tryMove(xy.getX() - 1, xy.getY());
     }
 
     private Vertex moveSouth(Vertex xy) {
-        return tryMove(xy.x + 1, xy.y);
+        return tryMove(xy.getX() + 1, xy.getY());
     }
 
     private Vertex moveWest(Vertex xy) {
-        return tryMove(xy.x, xy.y - 1);
+        return tryMove(xy.getX(), xy.getY() - 1);
     }
 
     private Vertex moveEast(Vertex xy) {
-        return tryMove(xy.x, xy.y + 1);
+        return tryMove(xy.getX(), xy.getY() + 1);
     }
 
-    private Vertex tryMove(int nextX, int nextY) {
-        if (nextX < 0 || nextX >= mazeLength || nextY < 0 || nextY >= mazeLength) {
+    private Vertex tryMove(int x, int y) {
+        if (isOutOfBounds(x, y)) {
             return Vertex.OUT_OF_BOUNDS;
-        } else if (mazeRows[nextX].charAt(nextY) == 'W') {
+        } else if (isWall(x, y)) {
             return Vertex.WALL;
         } else {
-            return vertexMap.get(String.format(PathFinder.FORMAT, nextX, nextY));
+            return vertexMap.get(String.format(PathFinder.FORMAT, x, y));
         }
+    }
+
+    private boolean isOutOfBounds(int... coordinates) {
+        return Arrays.stream(coordinates).anyMatch(x -> x < 0 || x >= mazeLength);
+    }
+
+    private boolean isWall(int x, int y) {
+        return mazeRows[x].charAt(y) == 'W';
     }
 }
 
 class Vertex implements Comparable<Vertex> {
-    public static final int INFINITY = 10_00_000;
-    static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1);
-    static final Vertex WALL = new Vertex(-2, -2);
+    public static final int INFINITY = 10_000_000;
+    static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1, -1);
+    static final Vertex WALL = new Vertex(-2, -2, -2);
 
-    static {
-        WALL.distance = -1;
-        OUT_OF_BOUNDS.distance = Integer.MAX_VALUE;
-    }
+    private final int x;
+    private final int y;
 
-    int x;
-    int y;
-    int distance = INFINITY;
-    boolean visited = false;
+    private int distance;
+    private boolean visited;
 
     public Vertex(int x, int y) {
-        this.x = x;
+        this.x= x;
         this.y = y;
+        distance = INFINITY;
+        visited = false;
     }
 
-    public boolean isPassable() {
-        return !(this.equals(OUT_OF_BOUNDS) || this.equals(WALL));
+    private Vertex(int x, int y, int distance) {
+        this(x, y);
+        this.distance = distance;
     }
 
     @Override
@@ -188,7 +179,7 @@ class Vertex implements Comparable<Vertex> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Vertex vertex = (Vertex) o;
-        return x == vertex.x && y == vertex.y;
+        return x == vertex.getX() && y == vertex.getY();
     }
 
     @Override
@@ -203,8 +194,36 @@ class Vertex implements Comparable<Vertex> {
 
     @Override
     public int compareTo(Vertex o) {
-        int compare = Integer.compare(x, o.x);
-        return compare == 0 ? Integer.compare(y, o.y) : compare;
+        int compare = Integer.compare(x, o.getX());
+        return compare == 0 ? Integer.compare(y, o.getY()) : compare;
+    }
+
+    public boolean isPassable() {
+        return !(this.equals(OUT_OF_BOUNDS) || this.equals(WALL));
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public boolean isVisited() {
+        return visited;
     }
 }
 
