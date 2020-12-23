@@ -1,9 +1,6 @@
 package com.tymoshenko.codewars;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 4 kyu
@@ -18,10 +15,15 @@ import java.util.stream.Collectors;
  * Empty positions are marked ..
  * Walls are marked W.
  * Start and exit positions are guaranteed to be empty in all test cases.
+ *
+ * TODO refactor:
+ * 1. Make shorter.
+ * 2. Remove nested classes.
+ * 3. Show the actual path, not just calculate it's distance.
  */
 public class PathFinder {
 
-    private int n;
+    public static final String FORMAT = "%4d%4d";
     private Map<Vertex, Queue<Vertex>> adjacentVertexesMap;
 
     /**
@@ -30,45 +32,29 @@ public class PathFinder {
      */
     public static int pathFinder(String maze) {
         PathFinder pathFinder = new PathFinder();
-        String[] mazeRows = maze.split("\n");
-        pathFinder.n = mazeRows.length;
-        char[][] mazze = new char[pathFinder.n][pathFinder.n];
-        for (int i = 0; i < pathFinder.n; i++) {
-            mazze[i] = mazeRows[i].toCharArray();
-        }
-        MazeParser parser = new MazeParser(mazze);
+        MazeParser parser = new MazeParser(maze);
         pathFinder.adjacentVertexesMap = parser.parse();
-        Vertex begin = parser.vertexMap.get(String.format("%4d%4d", 0, 0));
-        Vertex end = parser.vertexMap.get(String.format("%4d%4d", pathFinder.n -  1, pathFinder.n-1));
+        int mazeLength = parser.mazeLength;
+        Vertex begin = parser.vertexMap.get(String.format(FORMAT, 0, 0));
+        Vertex end = parser.vertexMap.get(String.format(FORMAT, mazeLength -  1, mazeLength-1));
         return pathFinder.dejkstra(begin, end);
     }
 
     private int dejkstra(Vertex start, Vertex end) {
         start.distance = 0;
-
-        showAdj();
-
         visitNeighbours(start);
-        Queue<Vertex> unvisited = new LinkedList<>(getNeighbours(start));
+        Queue<Vertex> unvisited = getNeighbours(start);
         while (!unvisited.isEmpty()) {
             Vertex next = unvisited.poll();
             visitNeighbours(next);
             Queue<Vertex> neighbours = getNeighbours(next);
-            unvisited.addAll(neighbours.stream().filter(neighbour -> !neighbour.visited).collect(Collectors.toList()));
+            for (Vertex neighbour : neighbours) {
+                if (!neighbour.visited && !unvisited.contains(neighbour)) {
+                    unvisited.add(neighbour);
+                }
+            }
         }
-
-        System.out.println("\nNot visited:");
-        adjacentVertexesMap.keySet().stream()
-                .filter(v -> !v.visited)
-                .forEach(v -> System.out.println(v + " " + v.distance));
-        int distance = end.distance;
-        return distance >= 10_000 ? -1 : distance;
-    }
-
-    private void showAdj() {
-        System.out.println("Adjacent map:");
-        adjacentVertexesMap.entrySet()
-                .forEach(e -> System.out.println(e.getKey() + " " + e.getValue().stream().map(Vertex::toString).collect(Collectors.joining(","))));
+        return end.visited ? end.distance : -1;
     }
 
     private void visitNeighbours(Vertex v) {
@@ -83,6 +69,7 @@ public class PathFinder {
                 neighbour.distance = distanceToNeighbour;
             }
         }
+        // Visited means the distance to all it's neighbours was calculated.
         v.visited = true;
     }
 
@@ -92,25 +79,30 @@ public class PathFinder {
 }
 
 class MazeParser {
-    private final char[][] maze;
+    final int mazeLength;
     Map<String, Vertex> vertexMap;
+    private final String[] mazeRows;
 
-    public MazeParser(char[][] maze) {
-        this.maze = maze;
+    public MazeParser(String maze) {
+        mazeRows = maze.split("\n");
+        mazeLength = mazeRows.length;
     }
 
     Map<Vertex, Queue<Vertex>> parse() {
         vertexMap = new HashMap<>();
         Map<Vertex, Queue<Vertex>> adjacentVertexesMap = new TreeMap<>();
         Vertex xy;
-        for (int i = 0; i < maze.length; i++) {
-            for (int j = 0; j < maze.length; j++) {
-                if (maze[i][j] != 'W') {
-                    xy = new Vertex(i, j);
-                    vertexMap.put(String.format("%4d%4d", i, j), xy);
+        int rowIndex = 0;
+        for (String row : mazeRows) {
+            for (int j = 0; j < mazeLength; j++) {
+                if (row.charAt(j) != 'W') {
+                    xy = new Vertex(rowIndex, j);
+                    vertexMap.put(String.format(PathFinder.FORMAT, rowIndex, j), xy);
                 }
             }
+            rowIndex++;
         }
+
         for (Vertex vertex : vertexMap.values()) {
             Queue<Vertex> adj = adjacentCells(vertex);
             adjacentVertexesMap.put(vertex, adj);
@@ -157,17 +149,18 @@ class MazeParser {
     }
 
     private Vertex tryMove(int nextX, int nextY) {
-        if (nextX < 0 || nextX >= maze.length || nextY < 0 || nextY >= maze.length) {
+        if (nextX < 0 || nextX >= mazeLength || nextY < 0 || nextY >= mazeLength) {
             return Vertex.OUT_OF_BOUNDS;
-        } else if (maze[nextX][nextY] == 'W') {
+        } else if (mazeRows[nextX].charAt(nextY) == 'W') {
             return Vertex.WALL;
         } else {
-            return vertexMap.get(String.format("%4d%4d", nextX, nextY));
+            return vertexMap.get(String.format(PathFinder.FORMAT, nextX, nextY));
         }
     }
 }
 
 class Vertex implements Comparable<Vertex> {
+    public static final int INFINITY = 10_00_000;
     static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1);
     static final Vertex WALL = new Vertex(-2, -2);
 
@@ -178,7 +171,7 @@ class Vertex implements Comparable<Vertex> {
 
     int x;
     int y;
-    int distance = 10_000;
+    int distance = INFINITY;
     boolean visited = false;
 
     public Vertex(int x, int y) {
@@ -209,7 +202,7 @@ class Vertex implements Comparable<Vertex> {
     }
 
     @Override
-    public int compareTo(@NotNull Vertex o) {
+    public int compareTo(Vertex o) {
         int compare = Integer.compare(x, o.x);
         return compare == 0 ? Integer.compare(y, o.y) : compare;
     }
