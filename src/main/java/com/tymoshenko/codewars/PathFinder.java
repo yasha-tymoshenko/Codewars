@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class PathFinder {
 
-    public static final String FORMAT = "%4d%4d";
+    public static final String FORMAT = "%10d%10d";
     private Map<Vertex, Queue<Vertex>> adjacentVertexesMap;
 
     /**
