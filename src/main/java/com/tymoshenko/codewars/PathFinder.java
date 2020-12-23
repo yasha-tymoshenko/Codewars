@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class PathFinder {
 
-    public static final String FORMAT = "%10d%10d";
+    static final String FORMAT = "%10d%10d";
     private Map<Vertex, Queue<Vertex>> adjacentVertexesMap;
 
     /**
@@ -152,7 +152,7 @@ class MazeParser {
 }
 
 class Vertex implements Comparable<Vertex> {
-    public static final int INFINITY = 10_000_000;
+    static final int INFINITY = 10_000_000;
     static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1, -1);
     static final Vertex WALL = new Vertex(-2, -2, -2);
 
