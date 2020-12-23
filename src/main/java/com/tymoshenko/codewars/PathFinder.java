@@ -32,9 +32,9 @@ public class PathFinder {
         PathFinder pathFinder = new PathFinder();
         pathFinder.parse(maze);
         out.println("solutions");
-        Vertex begin = new Vertex(pathFinder.n - 1, pathFinder.n - 1);
+        Vertex begin =  new Vertex(pathFinder.n - 1, pathFinder.n - 1);
         Vertex end = new Vertex(0, 0);
-        return pathFinder.buildPath(begin, end, new LinkedList<>());
+        return pathFinder.dejkstra(begin, end, new LinkedList<>());
     }
 
     private void parse(String maze) {
@@ -48,36 +48,52 @@ public class PathFinder {
         this.adjacentVertexesMap = parser.parse();
     }
 
-    private int buildPath(Vertex start, Vertex end, List<Vertex> path) {
-        Queue<Vertex> adj = getNeighbours(start);
-        boolean found = adj.contains(end);
+    private int dejkstra(Vertex start, Vertex end, List<Vertex> path) {
+        start.distance = 0;
         path.add(start);
-        if (found) {
-            out.println("result");
-            path.forEach(out::print);
-            out.println("\n\n");
 
-            return path.size();
-        }
-        while (!adj.isEmpty()) {
-            Vertex nextXY = adj.poll();
-            if (path.contains(nextXY)) {
-                continue;
+        adjacentVertexesMap.keySet().stream()
+                .filter(v -> !v.equals(start))
+                .forEach(v -> v.distance = Integer.MAX_VALUE);
+
+        List<Vertex> visited = new LinkedList<>();
+        List<Vertex> unvisited = new LinkedList<>();
+
+        unvisited.add(end);
+
+        // While exists unvisited
+        while (!unvisited.isEmpty()) {
+            Vertex nearest = getNearestNeighbour(unvisited);
+            unvisited.remove(nearest);
+
+            for (Vertex neighbour : getNeighbours(nearest)) {
+                if (!visited.contains(neighbour)) {
+                    if (neighbour.distance < nearest.distance + 1) {
+                        neighbour.distance = nearest.distance + 1;
+                        unvisited.add(neighbour);
+                    }
+                }
             }
-            int ff = buildPath(nextXY, end, path);
-            if (ff < 0) {
-                path.remove(path.size() - 1);
-            } else {
-                return ff;
+
+            visited.add(nearest);
+        }
+
+        return visited.stream().filter(start::equals).findAny().orElse(Vertex.WALL).distance;
+    }
+
+    private Vertex getNearestNeighbour(List<Vertex> list) {
+        Vertex next = list.get(0);
+        for (Vertex vertex : list) {
+            if (vertex.distance < next.distance) {
+                next = vertex;
             }
         }
-        return -1;
+        return next;
     }
 
     private Queue<Vertex> getNeighbours(Vertex xy) {
         return new LinkedList<>(adjacentVertexesMap.get(xy));
     }
-
 }
 
 class MazeParser {
@@ -160,8 +176,13 @@ class Vertex {
     static final Vertex OUT_OF_BOUNDS = new Vertex(-1, -1);
     static final Vertex WALL = new Vertex(-2, -2);
 
+    static {
+        WALL.distance = -1;
+    }
+
     int x;
     int y;
+    int distance;
 
     public Vertex(int x, int y) {
         this.x = x;
@@ -189,6 +210,5 @@ class Vertex {
     public String toString() {
         return "(" + x + ", " + y + ')';
     }
-
 }
 
