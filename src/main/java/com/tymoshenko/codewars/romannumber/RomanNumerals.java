@@ -68,22 +68,25 @@ public class RomanNumerals {
 
     private static StringBuilder toRoman(int decimalNumber, char[] romans) {
         StringBuilder sb = new StringBuilder();
+        char one = romans[0];
+        char five = romans[1];
+        char ten = romans[2];
         switch (decimalNumber) {
             case 0:
                 break;
             case 4:
-                sb.append(romans[0]).append(romans[1]);
+                sb.append(one).append(five);
                 break;
             case 9:
-                sb.append(romans[0]).append(romans[2]);
+                sb.append(one).append(ten);
                 break;
             default:
                 if (decimalNumber >= 5) {
-                    sb.append(romans[1]);
+                    sb.append(five);
                 }
                 int moduloFive = decimalNumber % 5;
                 while (moduloFive > 0) {
-                    sb.append(romans[0]);
+                    sb.append(one);
                     moduloFive--;
                 }
                 break;
