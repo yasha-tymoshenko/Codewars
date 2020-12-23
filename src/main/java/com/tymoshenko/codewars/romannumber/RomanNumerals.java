@@ -33,6 +33,30 @@ public class RomanNumerals {
                 .toString();
     }
 
+    public static int fromRoman(String romanNumeral) {
+        if (romanNumeral == null || romanNumeral.isBlank()) {
+            return 0;
+        }
+        int i = 0;
+        int sum = 0;
+        while (i < romanNumeral.length()) {
+            int current = toArabic(romanNumeral.charAt(i));
+            if (i + 1 < romanNumeral.length()) {
+                int next = toArabic(romanNumeral.charAt(i + 1));
+                if (current < next) {
+                    sum += next - current;
+                    i++;
+                } else {
+                    sum += current;
+                }
+            } else {
+                sum += current;
+            }
+            i++;
+        }
+        return sum;
+    }
+
     private static StringBuilder thousandsToRoman(int thousands) {
         StringBuilder sb = new StringBuilder();
         while (thousands > 0) {
@@ -65,30 +89,6 @@ public class RomanNumerals {
                 break;
         }
         return sb;
-    }
-
-    public static int fromRoman(String romanNumeral) {
-        if (romanNumeral == null || romanNumeral.isBlank()) {
-            return 0;
-        }
-        int i = 0;
-        int sum = 0;
-        while (i < romanNumeral.length()) {
-            int current = toArabic(romanNumeral.charAt(i));
-            if (i + 1 < romanNumeral.length()) {
-                int next = toArabic(romanNumeral.charAt(i + 1));
-                if (current < next) {
-                    sum += next - current;
-                    i++;
-                } else {
-                    sum += current;
-                }
-            } else {
-                sum += current;
-            }
-            i++;
-        }
-        return sum;
     }
 
     private static int toArabic(char roman) {
