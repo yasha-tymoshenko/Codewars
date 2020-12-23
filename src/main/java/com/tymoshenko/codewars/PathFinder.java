@@ -77,8 +77,8 @@ public class PathFinder {
 
 class MazeParser {
     private final int mazeLength;
-    private Map<String, Vertex> vertexMap;
     private final String[] mazeRows;
+    private Map<String, Vertex> vertexMap;
 
     public MazeParser(String maze) {
         mazeRows = maze.split("\n");
@@ -87,16 +87,13 @@ class MazeParser {
 
     public Map<Vertex, Queue<Vertex>> parse() {
         vertexMap = new HashMap<>();
-        Vertex xy;
-        int rowIndex = 0;
-        for (String row : mazeRows) {
-            for (int j = 0; j < mazeLength; j++) {
-                if (row.charAt(j) != 'W') {
-                    xy = new Vertex(rowIndex, j);
-                    vertexMap.put(String.format(PathFinder.FORMAT, rowIndex, j), xy);
+        for (int x = 0; x < mazeLength; x++) {
+            for (int y = 0; y < mazeLength; y++) {
+                if (isWall(x, y)) {
+                    continue;
                 }
+                vertexMap.put(String.format(PathFinder.FORMAT, x, y), new Vertex(x, y));
             }
-            rowIndex++;
         }
         return vertexMap.values().stream()
                 .collect(Collectors.toMap(vertex -> vertex, this::adjacentCells, (a, b) -> b, TreeMap::new));
@@ -163,7 +160,7 @@ class Vertex implements Comparable<Vertex> {
     private boolean visited;
 
     public Vertex(int x, int y) {
-        this.x= x;
+        this.x = x;
         this.y = y;
         distance = INFINITY;
         visited = false;
