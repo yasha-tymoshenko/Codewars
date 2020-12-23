@@ -21,7 +21,7 @@ import static java.lang.System.out;
  */
 public class PathFinder {
 
-    private char[][] maze;
+    private int n;
     private Map<Vertex, Queue<Vertex>> adjacentVertexesMap;
 
     /**
@@ -30,22 +30,21 @@ public class PathFinder {
      */
     public static int pathFinder(String maze) {
         PathFinder pathFinder = new PathFinder();
-
         pathFinder.parse(maze);
         out.println("solutions");
-        Vertex begin = new Vertex(pathFinder.maze[0].length - 1, pathFinder.maze[0].length - 1);
+        Vertex begin = new Vertex(pathFinder.n - 1, pathFinder.n - 1);
         Vertex end = new Vertex(0, 0);
         return pathFinder.buildPath(begin, end, new LinkedList<>());
     }
 
     private void parse(String maze) {
         String[] mazeRows = maze.split("\n");
-        int n = mazeRows.length;
-        this.maze = new char[n][n];
+        n = mazeRows.length;
+        char[][] mazze = new char[n][n];
         for (int i = 0; i < n; i++) {
-            this.maze[i] = mazeRows[i].toCharArray();
+            mazze[i] = mazeRows[i].toCharArray();
         }
-        MazeParser parser = new MazeParser(this.maze);
+        MazeParser parser = new MazeParser(mazze);
         this.adjacentVertexesMap = parser.parse();
     }
 
