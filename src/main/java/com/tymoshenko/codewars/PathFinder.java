@@ -45,69 +45,8 @@ public class PathFinder {
         for (int i = 0; i < n; i++) {
             this.maze[i] = mazeRows[i].toCharArray();
         }
-
-        this.adjacentVertexesMap = new LinkedHashMap<>();
-        Vertex xy;
-        out.println("Paths: ");
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (this.maze[i][j] != 'W') {
-                    xy = new Vertex(i, j);
-                    Queue<Vertex> adj = adjacentCells(xy);
-                    out.println("(" + i + "," + j + ")= " + adj.stream().filter(Objects::nonNull)
-                            .map(Vertex::toString)
-                            .collect(Collectors.joining("; "))
-                    );
-                    adjacentVertexesMap.put(xy, adj);
-                }
-            }
-        }
-    }
-
-    private Vertex moveNorth(Vertex xy) {
-        int nextX = xy.x - 1;
-        return tryMoveX(nextX, xy.y);
-    }
-
-    private Vertex moveSouth(Vertex xy) {
-        int nextX = xy.x + 1;
-        return tryMoveX(nextX, xy.y);
-    }
-
-    private Vertex moveWest(Vertex xy) {
-        int nextY = xy.y - 1;
-        return tryMoveY(xy.x, nextY);
-    }
-
-    private Vertex moveEast(Vertex xy) {
-        int nexyY = xy.y + 1;
-        return tryMoveY(xy.x, nexyY);
-    }
-
-    private Queue<Vertex> adjacentCells(Vertex xy) {
-        Queue<Vertex> adj = new LinkedList<>();
-        Vertex nextXY = moveNorth(xy);
-
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveSouth(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveWest(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        nextXY = moveEast(xy);
-        if (nextXY.isPassable()) {
-            adj.add(nextXY);
-        }
-        return adj;
-    }
-
-    private Queue<Vertex> getNeighbours(Vertex xy) {
-        return new LinkedList<>(adjacentVertexesMap.get(xy));
+        MazeParser parser = new MazeParser(this.maze);
+        this.adjacentVertexesMap = parser.parse();
     }
 
     private int buildPath(Vertex start, Vertex end, List<Vertex> path) {
@@ -136,23 +75,84 @@ public class PathFinder {
         return -1;
     }
 
-    private Vertex tryMoveX(int nextX, int y) {
-        if (nextX < 0 || nextX >= maze.length) {
-            return Vertex.OUT_OF_BOUNDS;
-        } else if (maze[nextX][y] == 'W') {
-            return Vertex.WALL;
-        } else {
-            return new Vertex(nextX, y);
-        }
+    private Queue<Vertex> getNeighbours(Vertex xy) {
+        return new LinkedList<>(adjacentVertexesMap.get(xy));
     }
 
-    private Vertex tryMoveY(int x, int nextY) {
-        if (nextY < 0 || nextY >= maze.length) {
+}
+
+class MazeParser {
+    private final char[][] maze;
+
+    public MazeParser(char[][] maze) {
+        this.maze = maze;
+    }
+
+    Map<Vertex, Queue<Vertex>> parse() {
+        Map<Vertex, Queue<Vertex>> adjacentVertexesMap = new LinkedHashMap<>();
+        Vertex xy;
+        out.println("Paths: ");
+        for (int i = 0; i < maze.length; i++) {
+            for (int j = 0; j < maze.length; j++) {
+                if (maze[i][j] != 'W') {
+                    xy = new Vertex(i, j);
+                    Queue<Vertex> adj = adjacentCells(xy);
+                    out.println("(" + i + "," + j + ")= " + adj.stream().filter(Objects::nonNull)
+                            .map(Vertex::toString)
+                            .collect(Collectors.joining("; "))
+                    );
+                    adjacentVertexesMap.put(xy, adj);
+                }
+            }
+        }
+        return adjacentVertexesMap;
+    }
+
+    private Queue<Vertex> adjacentCells(Vertex xy) {
+        Queue<Vertex> adj = new LinkedList<>();
+        Vertex nextXY = moveNorth(xy);
+
+        if (nextXY.isPassable()) {
+            adj.add(nextXY);
+        }
+        nextXY = moveSouth(xy);
+        if (nextXY.isPassable()) {
+            adj.add(nextXY);
+        }
+        nextXY = moveWest(xy);
+        if (nextXY.isPassable()) {
+            adj.add(nextXY);
+        }
+        nextXY = moveEast(xy);
+        if (nextXY.isPassable()) {
+            adj.add(nextXY);
+        }
+        return adj;
+    }
+
+    private Vertex moveNorth(Vertex xy) {
+        return tryMove(xy.x - 1, xy.y);
+    }
+
+    private Vertex moveSouth(Vertex xy) {
+        return tryMove(xy.x + 1, xy.y);
+    }
+
+    private Vertex moveWest(Vertex xy) {
+        return tryMove(xy.x, xy.y - 1);
+    }
+
+    private Vertex moveEast(Vertex xy) {
+        return tryMove(xy.x, xy.y + 1);
+    }
+
+    private Vertex tryMove(int nextX, int nextY) {
+        if (nextX < 0 || nextX >= maze.length || nextY < 0 || nextY >= maze.length) {
             return Vertex.OUT_OF_BOUNDS;
-        } else if (maze[x][nextY] == 'W') {
+        } else if (maze[nextX][nextY] == 'W') {
             return Vertex.WALL;
         } else {
-            return new Vertex(x, nextY);
+            return new Vertex(nextX, nextY);
         }
     }
 }
