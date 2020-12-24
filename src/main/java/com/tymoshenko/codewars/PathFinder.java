@@ -34,9 +34,7 @@ public class PathFinder {
         PathFinder pathFinder = new PathFinder();
         MazeParser parser = new MazeParser(maze);
         pathFinder.adjacentVertexesMap = parser.parse();
-        Vertex start = parser.getVertex(0, 0);
-        Vertex finish = parser.getVertex(parser.getMazeLength() - 1, parser.getMazeLength() - 1);
-        return pathFinder.findShortestPath(start, finish);
+        return pathFinder.findShortestPath(parser.getFirst(), parser.getLast());
     }
 
     private int findShortestPath(Vertex start, Vertex finish) {
@@ -105,11 +103,15 @@ class MazeParser {
                 .collect(Collectors.toMap(vertex -> vertex, this::adjacentAccessibleCells, (a, b) -> b, TreeMap::new));
     }
 
-    public int getMazeLength() {
-        return mazeLength;
+    public Vertex getFirst() {
+        return getVertex(0, 0);
     }
 
-    public Vertex getVertex(int x, int y) {
+    public Vertex getLast() {
+        return getVertex(mazeLength - 1, mazeLength - 1);
+    }
+
+    private Vertex getVertex(int x, int y) {
         return vertexMap.get(String.format(FORMAT, x, y));
     }
 
