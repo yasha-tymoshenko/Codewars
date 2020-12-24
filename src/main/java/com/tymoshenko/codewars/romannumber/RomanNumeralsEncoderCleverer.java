@@ -41,12 +41,7 @@ public class RomanNumeralsEncoderCleverer implements DecimalToRomanConverter {
                 if (number >= 5) {
                     sb.append(five);
                 }
-                int moduloFive = number % 5;
-                while (moduloFive > 0) {
-                    sb.append(one);
-                    moduloFive--;
-                }
-                break;
+                sb.append(String.valueOf(one).repeat(number % 5));
         }
         return sb;
     }
