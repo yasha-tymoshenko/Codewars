@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Walls are marked W.
  * Start and exit positions are guaranteed to be empty in all test cases.
  * <p>
- *
+ * <p>
  * TODO refactor:
  * 1. Make shorter.
  * 2. Remove nested classes.
@@ -102,7 +102,7 @@ class MazeParser {
             }
         }
         return vertexMap.values().stream()
-                .collect(Collectors.toMap(vertex -> vertex, this::adjacentCells, (a, b) -> b, TreeMap::new));
+                .collect(Collectors.toMap(vertex -> vertex, this::adjacentAccessibleCells, (a, b) -> b, TreeMap::new));
     }
 
     public int getMazeLength() {
@@ -113,36 +113,20 @@ class MazeParser {
         return vertexMap.get(String.format(FORMAT, x, y));
     }
 
-    private Queue<Vertex> adjacentCells(Vertex xy) {
-        return Arrays.stream(new Vertex[]{moveNorth(xy), moveSouth(xy), moveWest(xy), moveEast(xy)})
-                .filter(Vertex::isAccessible)
+    private Queue<Vertex> adjacentAccessibleCells(Vertex xy) {
+        Vertex[] neighbours = {
+                tryMove(xy.getX() - 1, xy.getY()),
+                tryMove(xy.getX() + 1, xy.getY()),
+                tryMove(xy.getX(), xy.getY() - 1),
+                tryMove(xy.getX(), xy.getY() + 1)
+        };
+        return Arrays.stream(neighbours)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
 
-    private Vertex moveNorth(Vertex xy) {
-        return tryMove(xy.getX() - 1, xy.getY());
-    }
-
-    private Vertex moveSouth(Vertex xy) {
-        return tryMove(xy.getX() + 1, xy.getY());
-    }
-
-    private Vertex moveWest(Vertex xy) {
-        return tryMove(xy.getX(), xy.getY() - 1);
-    }
-
-    private Vertex moveEast(Vertex xy) {
-        return tryMove(xy.getX(), xy.getY() + 1);
-    }
-
     private Vertex tryMove(int x, int y) {
-        if (isOutOfBounds(x, y)) {
-            return Vertex.OUT_OF_BOUNDS;
-        } else if (isWall(x, y)) {
-            return Vertex.WALL;
-        } else {
-            return vertexMap.get(String.format(FORMAT, x, y));
-        }
+        return isOutOfBounds(x, y) || isWall(x, y) ? null : vertexMap.get(String.format(FORMAT, x, y));
     }
 
     private boolean isOutOfBounds(int... coordinates) {
@@ -156,8 +140,6 @@ class MazeParser {
 
 class Vertex implements Comparable<Vertex> {
     static final int INFINITY = 10_000_000;
-    static final Vertex WALL = new Vertex(-1, -1, -1);
-    static final Vertex OUT_OF_BOUNDS = new Vertex(-2, -2, -2);
 
     private final int x;
     private final int y;
@@ -172,11 +154,6 @@ class Vertex implements Comparable<Vertex> {
         distance = INFINITY;
         visited = false;
         path = new ArrayList<>();
-    }
-
-    private Vertex(int x, int y, int distance) {
-        this(x, y);
-        this.distance = distance;
     }
 
     @Override
@@ -214,10 +191,6 @@ class Vertex implements Comparable<Vertex> {
     public void addToPath(Vertex previous) {
         path.add(previous);
         path.addAll(previous.getPath());
-    }
-
-    public boolean isAccessible() {
-        return !(this.equals(OUT_OF_BOUNDS) || this.equals(WALL));
     }
 
     public void setDistance(int distance) {
