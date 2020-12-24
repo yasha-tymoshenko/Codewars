@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.pathfinder;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

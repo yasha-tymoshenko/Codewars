@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.pathfinder;
 
 import java.util.Arrays;
 

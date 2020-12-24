@@ -1,4 +1,4 @@
-package com.tymoshenko.codewars;
+package com.tymoshenko.codewars.pathfinder;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -6,74 +6,78 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.*;
 
 /**
- * 4 kyu
+ * 3 kyu
  * <p>
- * https://www.codewars.com/kata/57658bfa28ed87ecfa00058a/train/java
+ * https://www.codewars.com/kata/576986639772456f6f00030c/train/java
  */
-public class PathFinder {
-
-    private final Map<Node, Queue<Node>> adjacencyMatrix;
-
-    public PathFinder(String maze) {
-        adjacencyMatrix = buildAdjacencyMatrix(maze);
-    }
+public class PathFinderAlpinist {
 
     public static int pathFinder(String maze) {
-        return maze == null || maze.isBlank() ? -1 : new PathFinder(maze).findShortestPath();
+        return maze == null || maze.isBlank() || maze.length() == 1
+                ? 0
+                : new PathFinderAlpinist(maze).findShortestPath();
+    }
+
+    private final Map<MountainNode, Queue<MountainNode>> adjacencyMatrix;
+    private final Map<String, Integer> edgesWeighMap;
+
+    public PathFinderAlpinist(String maze) {
+        adjacencyMatrix = buildAdjacencyMatrix(maze);
+        edgesWeighMap = new TreeMap<>();
+        adjacencyMatrix.forEach((mountain, neighbours) -> neighbours
+                .forEach(neighbour -> edgesWeighMap
+                        .put(edge(mountain, neighbour), Math.abs(mountain.altitude - neighbour.altitude))));
     }
 
     private int findShortestPath() {
-        Deque<Node> nodes = new LinkedList<>(adjacencyMatrix.keySet());
+        Deque<MountainNode> nodes = new LinkedList<>(adjacencyMatrix.keySet());
         if (nodes.isEmpty()) {
-            return -1;
+            return 0;
         }
-        Node start = nodes.peekFirst();
-        Node finish = nodes.peekLast();
+        MountainNode start = nodes.peekFirst();
+        MountainNode finish = nodes.peekLast();
 
         start.distance = 0;
         visitNeighbours(start);
-        Queue<Node> unvisited = getNeighbours(start);
+        Queue<MountainNode> unvisited = getNeighbours(start);
         while (!unvisited.isEmpty()) {
-            Node next = unvisited.poll();
+            MountainNode next = unvisited.poll();
             visitNeighbours(next);
             getNeighbours(next).stream()
                     .filter(neighbour -> !neighbour.visited && !unvisited.contains(neighbour))
                     .forEach(unvisited::add);
         }
-        if (finish.visited) {
-            finish.printPath();
-            return finish.distance;
-        }
-        return -1;
+        return finish.visited ? finish.distance : -1;
     }
 
-    private void visitNeighbours(Node v) {
-        Queue<Node> neighbours = getNeighbours(v);
+    private void visitNeighbours(MountainNode mountain) {
+        Queue<MountainNode> neighbours = getNeighbours(mountain);
         while (!neighbours.isEmpty()) {
-            Node neighbour = neighbours.poll();
-            int distanceToNeighbour = v.distance + 1;
+            MountainNode neighbour = neighbours.poll();
+            int distanceToNeighbour = mountain.distance + edgesWeighMap.get(edge(mountain, neighbour));
             if (neighbour.distance > distanceToNeighbour) {
                 neighbour.distance = distanceToNeighbour;
-                neighbour.addToPath(v);
+                neighbour.addToPath(mountain);
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
-        v.visited = true;
+        mountain.visited = true;
     }
 
-    private Queue<Node> getNeighbours(Node xy) {
+    private Queue<MountainNode> getNeighbours(MountainNode xy) {
         return new LinkedList<>(adjacencyMatrix.get(xy));
     }
 
-    private Map<Node, Queue<Node>> buildAdjacencyMatrix(String maze) {
+    private String edge(MountainNode mountain, MountainNode neighbour) {
+        return String.format("%s->%s", mountain.toString(), neighbour.toString());
+    }
+
+    private Map<MountainNode, Queue<MountainNode>> buildAdjacencyMatrix(String maze) {
         String[] mazeRows = maze.split("\n");
-        Map<String, Node> nodeMap = new HashMap<>();
+        Map<String, MountainNode> nodeMap = new HashMap<>();
         for (int x = 0; x < mazeRows.length; x++) {
             for (int y = 0; y < mazeRows.length; y++) {
-                if (mazeRows[x].charAt(y) == 'W') {
-                    continue;
-                }
-                Node xy = new Node(x, y);
+                MountainNode xy = new MountainNode(x, y, Integer.parseInt("" + mazeRows[x].charAt(y)));
                 nodeMap.put(xy.toString(), xy);
             }
         }
@@ -86,19 +90,21 @@ public class PathFinder {
     }
 }
 
-class Node implements Comparable<Node> {
+class MountainNode implements Comparable<MountainNode> {
     static final int INFINITY = 10_000_000;
 
     final int x;
     final int y;
-    final List<Node> path;
+    final int altitude;
+    List<MountainNode> path;
 
     int distance;
     boolean visited;
 
-    public Node(int x, int y) {
+    public MountainNode(int x, int y, int altitude) {
         this.x = x;
         this.y = y;
+        this.altitude = altitude;
         visited = false;
         distance = INFINITY;
         path = new ArrayList<>();
@@ -108,7 +114,7 @@ class Node implements Comparable<Node> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
+        MountainNode node = (MountainNode) o;
         return x == node.x && y == node.y;
     }
 
@@ -123,7 +129,7 @@ class Node implements Comparable<Node> {
     }
 
     @Override
-    public int compareTo(Node other) {
+    public int compareTo(MountainNode other) {
         int compare = Integer.compare(x, other.x);
         return compare == 0 ? Integer.compare(y, other.y) : compare;
     }
@@ -137,17 +143,9 @@ class Node implements Comparable<Node> {
         );
     }
 
-    public void addToPath(Node previous) {
-        path.add(previous);
-        path.addAll(previous.path);
-    }
-
-    public void printPath() {
-        List<Node> shortestPath = new ArrayList<>(this.path);
-        Collections.reverse(shortestPath);
-        shortestPath.add(this);
-        System.out.printf("Shortest path(%3d): %s.%n", shortestPath.size() - 1,
-                shortestPath.stream().map(Node::toString).collect(joining(", ")));
+    public void addToPath(MountainNode previous) {
+        path = new ArrayList<>(previous.path);
+        path.add(this);
     }
 
     private String coordinate(int x, int y) {
