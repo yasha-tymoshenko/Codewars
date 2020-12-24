@@ -25,8 +25,11 @@ public class PathFinder {
 
     private int findShortestPath() {
         Deque<Node> nodes = new LinkedList<>(adjacencyMatrix.keySet());
-        Node start = Objects.requireNonNull(nodes.peekFirst());
-        Node finish = Objects.requireNonNull(nodes.peekLast());
+        if (nodes.isEmpty()) {
+            return -1;
+        }
+        Node start = nodes.peekFirst();
+        Node finish = nodes.peekLast();
 
         start.distance = 0;
         visitNeighbours(start);
@@ -64,6 +67,9 @@ public class PathFinder {
     }
 
     private Map<Node, Queue<Node>> buildAdjacencyMatrix(String maze) {
+        if (maze == null || maze.isBlank()) {
+            return Collections.emptyMap();
+        }
         String[] mazeRows = maze.split("\n");
         Map<String, Node> nodeMap = new HashMap<>();
         for (int x = 0; x < mazeRows.length; x++) {

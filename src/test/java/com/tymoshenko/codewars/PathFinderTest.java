@@ -3,7 +3,9 @@ package com.tymoshenko.codewars;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +37,13 @@ class PathFinderTest {
     @Test
     void smallestMaze() {
         assertEquals(0, PathFinder.pathFinder(".\n"));
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    void emptyMazes(String maze) {
+        assertEquals(-1, PathFinder.pathFinder(maze));
     }
 
     private static Stream<Arguments> provideMazeFromFile() throws IOException {
