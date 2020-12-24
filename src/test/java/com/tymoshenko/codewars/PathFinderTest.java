@@ -1,5 +1,6 @@
 package com.tymoshenko.codewars;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -29,6 +30,11 @@ class PathFinderTest {
     @MethodSource("provideMazeFromFile")
     void mazePathFinder(String maze, int expectedPathLength) {
         assertEquals(expectedPathLength, PathFinder.pathFinder(maze));
+    }
+
+    @Test
+    void smallestMaze() {
+        assertEquals(0, PathFinder.pathFinder(".\n"));
     }
 
     private static Stream<Arguments> provideMazeFromFile() throws IOException {
