@@ -19,8 +19,7 @@ public class PathFinder {
     }
 
     public static int pathFinder(String maze) {
-        PathFinder pathFinder = new PathFinder(maze);
-        return pathFinder.findShortestPath();
+        return maze == null || maze.isBlank() ? -1 : new PathFinder(maze).findShortestPath();
     }
 
     private int findShortestPath() {
@@ -67,9 +66,6 @@ public class PathFinder {
     }
 
     private Map<Node, Queue<Node>> buildAdjacencyMatrix(String maze) {
-        if (maze == null || maze.isBlank()) {
-            return Collections.emptyMap();
-        }
         String[] mazeRows = maze.split("\n");
         Map<String, Node> nodeMap = new HashMap<>();
         for (int x = 0; x < mazeRows.length; x++) {
