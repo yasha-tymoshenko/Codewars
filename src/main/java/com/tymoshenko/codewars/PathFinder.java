@@ -12,8 +12,6 @@ import static java.util.stream.Collectors.*;
  */
 public class PathFinder {
 
-    static final String FORMAT = "%10d%10d";
-
     private final Map<Node, Queue<Node>> adjacencyMatrix;
 
     public PathFinder(String maze) {
@@ -74,7 +72,7 @@ public class PathFinder {
                     continue;
                 }
                 Node xy = new Node(x, y);
-                nodeMap.put(String.format(FORMAT, x, y), xy);
+                nodeMap.put(xy.toString(), xy);
             }
         }
         return nodeMap.values().stream()
@@ -130,10 +128,10 @@ class Node implements Comparable<Node> {
 
     public Stream<String> neighbourCoordinates() {
         return Stream.of(
-                String.format(PathFinder.FORMAT, x - 1, y),
-                String.format(PathFinder.FORMAT, x + 1, y),
-                String.format(PathFinder.FORMAT, x, y - 1),
-                String.format(PathFinder.FORMAT, x, y + 1)
+                new Node(x - 1, y).toString(),
+                new Node(x + 1, y).toString(),
+                new Node(x, y - 1).toString(),
+                new Node(x, y + 1).toString()
         );
     }
 
