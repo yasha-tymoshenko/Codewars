@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
  */
 public class PathFinder {
 
-    static final String FORMAT = "%10d%10d";
     private Map<Vertex, Queue<Vertex>> adjacentVertexesMap;
 
     /**
@@ -81,6 +80,8 @@ public class PathFinder {
 }
 
 class MazeParser {
+    private static final String FORMAT = "%10d%10d";
+
     private final int mazeLength;
     private final String[] mazeRows;
     private Map<String, Vertex> vertexMap;
@@ -97,7 +98,7 @@ class MazeParser {
                 if (isWall(x, y)) {
                     continue;
                 }
-                vertexMap.put(String.format(PathFinder.FORMAT, x, y), new Vertex(x, y));
+                vertexMap.put(String.format(FORMAT, x, y), new Vertex(x, y));
             }
         }
         return vertexMap.values().stream()
@@ -109,7 +110,7 @@ class MazeParser {
     }
 
     public Vertex getVertex(int x, int y) {
-        return vertexMap.get(String.format(PathFinder.FORMAT, x, y));
+        return vertexMap.get(String.format(FORMAT, x, y));
     }
 
     private Queue<Vertex> adjacentCells(Vertex xy) {
@@ -140,7 +141,7 @@ class MazeParser {
         } else if (isWall(x, y)) {
             return Vertex.WALL;
         } else {
-            return vertexMap.get(String.format(PathFinder.FORMAT, x, y));
+            return vertexMap.get(String.format(FORMAT, x, y));
         }
     }
 
