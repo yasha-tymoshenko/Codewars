@@ -79,15 +79,15 @@ class MazeParser {
 
     private final int mazeLength;
     private final String[] mazeRows;
-    private Map<String, Vertex> vertexMap;
+    private final Map<String, Vertex> vertexMap;
 
     public MazeParser(String maze) {
+        vertexMap = new HashMap<>();
         mazeRows = maze.split("\n");
         mazeLength = mazeRows.length;
     }
 
     public Map<Vertex, Queue<Vertex>> parse() {
-        vertexMap = new HashMap<>();
         for (int x = 0; x < mazeLength; x++) {
             for (int y = 0; y < mazeLength; y++) {
                 if (isWall(x, y)) {
@@ -150,8 +150,8 @@ class Vertex implements Comparable<Vertex> {
     public Vertex(int x, int y) {
         this.x = x;
         this.y = y;
-        distance = INFINITY;
         visited = false;
+        distance = INFINITY;
         path = new ArrayList<>();
     }
 
@@ -174,9 +174,9 @@ class Vertex implements Comparable<Vertex> {
     }
 
     @Override
-    public int compareTo(Vertex o) {
-        int compare = Integer.compare(x, o.getX());
-        return compare == 0 ? Integer.compare(y, o.getY()) : compare;
+    public int compareTo(Vertex other) {
+        int compare = Integer.compare(x, other.getX());
+        return compare == 0 ? Integer.compare(y, other.getY()) : compare;
     }
 
     public void printPath() {
