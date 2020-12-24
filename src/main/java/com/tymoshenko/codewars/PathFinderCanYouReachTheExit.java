@@ -1,5 +1,7 @@
 package com.tymoshenko.codewars;
 
+import java.util.Arrays;
+
 /**
  * 4 kyu
  * <p>
@@ -7,8 +9,8 @@ package com.tymoshenko.codewars;
  */
 public class PathFinderCanYouReachTheExit {
 
+    public static final int INFINITY = 10_000_000;
     private int[][] board;
-    private boolean exitReached;
 
     public static boolean pathFinder(String maze) {
         return maze != null && !maze.isBlank() && new PathFinderCanYouReachTheExit(maze).isExitReachable();
@@ -16,7 +18,6 @@ public class PathFinderCanYouReachTheExit {
 
     public PathFinderCanYouReachTheExit(String maze) {
         initBoard(maze);
-        exitReached = false;
     }
 
     public boolean isExitReachable() {
@@ -24,7 +25,8 @@ public class PathFinderCanYouReachTheExit {
             return true;
         }
         walk(0, 0, 0);
-        return board[board.length - 1][board.length - 1] > 0;
+        int mazeExitValue = board[board.length - 1][board.length - 1];
+        return mazeExitValue > 0 && mazeExitValue < INFINITY;
     }
 
     private void initBoard(String maze) {
@@ -34,27 +36,28 @@ public class PathFinderCanYouReachTheExit {
         for (int x = 0; x < n; x++) {
             board[x] = new int[n];
             for (int y = 0; y < n; y++) {
-                board[x][y] = mazeRows[x].charAt(y) == '.' ? 0 : -1;
+                board[x][y] = mazeRows[x].charAt(y) == '.' ? INFINITY : -1;
             }
         }
     }
 
-    private void walk(int x, int y, int distance) {
-        if (exitReached || x < 0 || x >= board.length || y < 0 || y >= board.length || board[x][y] != 0) {
+    private void walk(int x, int y, int distanceFromEntrance) {
+        if (isOutOfBounds(x, y) || board[x][y] <= distanceFromEntrance
+                || distanceFromEntrance == board.length * board.length) {
             return;
         }
-        if (x == 0 && y == 0 && distance > 0) {
-            return;
-        }
-        board[x][y] = distance;
+        board[x][y] = distanceFromEntrance;
         if (x == board.length - 1 && y == board.length - 1) {
-            exitReached = true;
             return;
         }
-        distance++;
-        walk(x + 1, y, distance);
-        walk(x, y + 1, distance);
-        walk(x - 1, y, distance);
-        walk(x, y - 1, distance);
+        distanceFromEntrance++;
+        walk(x, y - 1, distanceFromEntrance);
+        walk(x, y + 1, distanceFromEntrance);
+        walk(x - 1, y, distanceFromEntrance);
+        walk(x + 1, y, distanceFromEntrance);
+    }
+
+    private boolean isOutOfBounds(int... xy) {
+        return Arrays.stream(xy).anyMatch(c -> c < 0 || c >= board.length);
     }
 }
