@@ -84,11 +84,7 @@ public class RomanNumerals {
                 if (decimalNumber >= 5) {
                     sb.append(five);
                 }
-                int moduloFive = decimalNumber % 5;
-                while (moduloFive > 0) {
-                    sb.append(one);
-                    moduloFive--;
-                }
+                sb.append(String.valueOf(one).repeat(decimalNumber % 5));
                 break;
         }
         return sb;
