@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
  * Walls are marked W.
  * Start and exit positions are guaranteed to be empty in all test cases.
  * <p>
+ *
  * TODO refactor:
  * 1. Make shorter.
  * 2. Remove nested classes.
- * 3. Show the actual path, not just calculate it's distance.
  */
 public class PathFinder {
 
@@ -51,7 +51,11 @@ public class PathFinder {
                     .filter(neighbour -> !neighbour.isVisited() && !unvisited.contains(neighbour))
                     .forEach(unvisited::add);
         }
-        return finish.isVisited() ? finish.getDistance() : -1;
+        if (finish.isVisited()) {
+            finish.printPath();
+            return finish.getDistance();
+        }
+        return -1;
     }
 
     private void visitNeighbours(Vertex v) {
@@ -64,6 +68,7 @@ public class PathFinder {
             int distanceToNeighbour = v.getDistance() + 1;
             if (neighbour.getDistance() > distanceToNeighbour) {
                 neighbour.setDistance(distanceToNeighbour);
+                neighbour.addToPath(v);
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
@@ -155,6 +160,7 @@ class Vertex implements Comparable<Vertex> {
 
     private final int x;
     private final int y;
+    private final List<Vertex> path;
 
     private int distance;
     private boolean visited;
@@ -164,6 +170,7 @@ class Vertex implements Comparable<Vertex> {
         this.y = y;
         distance = INFINITY;
         visited = false;
+        path = new ArrayList<>();
     }
 
     private Vertex(int x, int y, int distance) {
@@ -186,13 +193,26 @@ class Vertex implements Comparable<Vertex> {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ')';
+        return String.format("(%2d, %2d)", x, y);
     }
 
     @Override
     public int compareTo(Vertex o) {
         int compare = Integer.compare(x, o.getX());
         return compare == 0 ? Integer.compare(y, o.getY()) : compare;
+    }
+
+    public void printPath() {
+        List<Vertex> shortestPath = new ArrayList<>(this.path);
+        Collections.reverse(shortestPath);
+        shortestPath.add(this);
+        System.out.printf("Shortest path(%3d): %s.%n", shortestPath.size() - 1,
+                shortestPath.stream().map(Vertex::toString).collect(Collectors.joining(", ")));
+    }
+
+    public void addToPath(Vertex previous) {
+        path.add(previous);
+        path.addAll(previous.getPath());
     }
 
     public boolean isAccessible() {
@@ -221,6 +241,10 @@ class Vertex implements Comparable<Vertex> {
 
     public boolean isVisited() {
         return visited;
+    }
+
+    public List<Vertex> getPath() {
+        return path;
     }
 }
 
