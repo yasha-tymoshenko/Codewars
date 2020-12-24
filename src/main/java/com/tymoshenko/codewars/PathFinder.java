@@ -1,12 +1,13 @@
 package com.tymoshenko.codewars;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * 4 kyu
- *
+ * <p>
  * https://www.codewars.com/kata/57658bfa28ed87ecfa00058a/train/java
  */
 public class PathFinder {
@@ -67,7 +68,6 @@ public class PathFinder {
     private Map<Node, Queue<Node>> buildAdjacencyMatrix(String maze) {
         String[] mazeRows = maze.split("\n");
         Map<String, Node> nodeMap = new HashMap<>();
-        Map<Node, Queue<Node>> matrix = new TreeMap<>();
         for (int x = 0; x < mazeRows.length; x++) {
             for (int y = 0; y < mazeRows.length; y++) {
                 if (mazeRows[x].charAt(y) == 'W') {
@@ -77,14 +77,12 @@ public class PathFinder {
                 nodeMap.put(String.format(FORMAT, x, y), xy);
             }
         }
-        for (Node v : nodeMap.values()) {
-            Queue<Node> adjacent = new LinkedList<>();
-            v.neighbourCoordinates()
-                    .filter(nodeMap::containsKey)
-                    .forEach(key -> adjacent.add(nodeMap.get(key)));
-            matrix.put(v, adjacent);
-        }
-        return matrix;
+        return nodeMap.values().stream()
+                .collect(toMap(node -> node, node -> node.neighbourCoordinates()
+                                .filter(nodeMap::containsKey)
+                                .map(nodeMap::get)
+                                .collect(toCollection(LinkedList::new)),
+                        (a, b) -> b, TreeMap::new));
     }
 }
 
@@ -149,6 +147,6 @@ class Node implements Comparable<Node> {
         Collections.reverse(shortestPath);
         shortestPath.add(this);
         System.out.printf("Shortest path(%3d): %s.%n", shortestPath.size() - 1,
-                shortestPath.stream().map(Node::toString).collect(Collectors.joining(", ")));
+                shortestPath.stream().map(Node::toString).collect(joining(", ")));
     }
 }
