@@ -117,7 +117,7 @@ class Node implements Comparable<Node> {
 
     @Override
     public String toString() {
-        return String.format("(%2d, %2d)", x, y);
+        return coordinate(x, y);
     }
 
     @Override
@@ -128,10 +128,10 @@ class Node implements Comparable<Node> {
 
     public Stream<String> neighbourCoordinates() {
         return Stream.of(
-                new Node(x - 1, y).toString(),
-                new Node(x + 1, y).toString(),
-                new Node(x, y - 1).toString(),
-                new Node(x, y + 1).toString()
+                coordinate(x - 1, y),
+                coordinate(x + 1, y),
+                coordinate(x, y - 1),
+                coordinate(x, y + 1)
         );
     }
 
@@ -146,5 +146,9 @@ class Node implements Comparable<Node> {
         shortestPath.add(this);
         System.out.printf("Shortest path(%3d): %s.%n", shortestPath.size() - 1,
                 shortestPath.stream().map(Node::toString).collect(joining(", ")));
+    }
+
+    private String coordinate(int x, int y) {
+        return String.format("(%2d, %2d)", x, y);
     }
 }
