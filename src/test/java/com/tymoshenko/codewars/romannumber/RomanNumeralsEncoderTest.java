@@ -44,8 +44,4 @@ class RomanNumeralsEncoderTest {
         assertEquals("MMMCMXCIX", conversion.solution(3999));
     }
 
-    @Test
-    void exceptionWhenConvertingZero() {
-
-    }
 }
