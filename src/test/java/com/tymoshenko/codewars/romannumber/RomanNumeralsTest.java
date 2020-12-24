@@ -1,31 +1,33 @@
 package com.tymoshenko.codewars.romannumber;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RomanNumeralsTest {
-    @Test
-    void testToRoman() {
-        assertEquals("I", RomanNumerals.toRoman(1));
-        assertEquals("II", RomanNumerals.toRoman(2));
+
+    @ParameterizedTest
+    @CsvSource(value = {"1=I", "2=II", "2345=MMCCCXLV"}, delimiter = '=')
+    void testToRoman(int decimal, String expectedRoman) {
+        assertEquals(expectedRoman, RomanNumerals.toRoman(decimal));
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {"I=1", "II=2", "V=5", "IX=9"}, delimiter = '=')
+    void testFromRoman(String roman, int expectedDecimal) {
+        assertEquals(expectedDecimal, RomanNumerals.fromRoman(roman));
+    }
+
+    @ParameterizedTest
+    @CsvSource({"MCMXC,1990", "MDCLXVI,1666", "MI,1001", "MCMLXXXVII,1987"})
+    void testFromRomanThousands(String roman, int expectedDecimal) {
+        assertEquals(expectedDecimal, RomanNumerals.fromRoman(roman));
     }
 
     @Test
-    void testFromRoman() {
-        assertEquals(1, RomanNumerals.fromRoman("I"));
-        assertEquals(2, RomanNumerals.fromRoman("II"));
-    }
-
-    @Test
-    void fromRomanThousands() {
-        assertEquals(1990, RomanNumerals.fromRoman("MCMXC"));
-        assertEquals(1666, RomanNumerals.fromRoman("MDCLXVI"));
-        assertEquals(1001, RomanNumerals.fromRoman("MI"));
-    }
-
-    @Test
-    void fromRomanTens() {
+    void testFromRomanTens() {
         assertEquals(23, RomanNumerals.fromRoman("XXIII"));
     }
 }

@@ -1,6 +1,8 @@
 package com.tymoshenko.codewars.romannumber;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,30 +10,22 @@ class RomanNumeralsEncoderTest {
 
     private final DecimalToRomanConverter conversion = new RomanNumeralsEncoderOOP();
 
-    @Test
-    void shouldConvertToRoman_1_9() {
-        assertEquals( "I", conversion.solution(1));
-        assertEquals( "IV", conversion.solution(4));
-        assertEquals( "VI", conversion.solution(6));
+    @ParameterizedTest
+    @CsvSource({"1,I", "4,IV", "6,VI"})
+    void shouldConvertToRoman_1_9(int dec, String rom) {
+        assertEquals(rom, conversion.solution(dec));
     }
 
-    @Test
-    void convert_10_20() {
-        assertEquals("X", conversion.solution(10));
-        assertEquals("XI", conversion.solution(11));
-        assertEquals("XIV", conversion.solution(14));
-        assertEquals("XV", conversion.solution(15));
-        assertEquals("XVIII", conversion.solution(18));
-        assertEquals("XX", conversion.solution(20));
+    @ParameterizedTest
+    @CsvSource({"X,10", "XI,11", "XIV,14", "XV,15", "XX,20"})
+    void convert_10_20(String rom, int dec) {
+        assertEquals(rom, conversion.solution(dec));
     }
 
-    @Test
-    void convert_20_90() {
-        assertEquals("XXI", conversion.solution(21));
-        assertEquals("XXXV", conversion.solution(35));
-        assertEquals("LXXV", conversion.solution(75));
-        assertEquals("LXXXIX", conversion.solution(89));
-        assertEquals("XC", conversion.solution(90));
+    @ParameterizedTest
+    @CsvSource({"XXI,21", "XXXV,35", "LXXV,75", "LXXXIX,89", "XC,90"})
+    void convert_20_90(String rom, int dec) {
+        assertEquals(rom, conversion.solution(dec));
     }
 
     @Test
