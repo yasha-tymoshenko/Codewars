@@ -1,92 +1,35 @@
 package com.tymoshenko.codewars;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpinWordsTest {
 
     private final SpinWords spinWords = new SpinWords();
 
-    private String arg;
-    private String expected;
-
-    @Test
-    void reverseWord5LettersAngKeepCase() {
-        arg = "Green";
-        expected = "neerG";
-        test();
+    @ParameterizedTest
+    @CsvSource({
+            "Green,neerG",
+            "HOUSE,ESUOH",
+            "train,niart",
+            "школа,алокш",
+            "Hogwarts,strawgoH",
+            "Tree,Tree",
+            "Harry Potter is the wizard who defeated Lord Voldemort.,yrraH rettoP is the draziw who detaefed Lord .tromedloV",
+    })
+    void spinWordsLongerThan5Letters(String text, String expected) {
+        assertEquals(expected, spinWords.spinWords(text));
     }
 
-    @Test
-    void reverseWords5LettersAllUpperCase() {
-        arg = "HOUSE";
-        expected = "ESUOH";
-        test();
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    void spinWordsShouldHandleNullsAndEmptyStrings(String text) {
+        assertTrue(spinWords.spinWords(text).isEmpty());
     }
-
-    @Test
-    void reverseWords5LettersAllLowerCase() {
-        arg = "train";
-        expected = "niart";
-        test();
-    }
-
-    @Test
-    void reverseWords5LettersRussian() {
-        arg = "школа";
-        expected = "алокш";
-        test();
-    }
-
-    @Test
-    void reverseWordLongerThan5Letters() {
-        arg = "Hogwarts";
-        expected = "strawgoH";
-        test();
-    }
-
-    @Test
-    void noReverseWordLessThan5Letter() {
-        arg = "Tree";
-        expected = "Tree";
-        test();
-    }
-
-    @Test
-    void exceptionWhenNullArg() {
-//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(null));
-        arg = null;
-        expected = "";
-        test();
-    }
-
-    @Test
-    void exceptionWhenEmptyString() {
-//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords(""));
-        arg = "";
-        expected = "";
-        test();
-    }
-
-    @Test
-    void exceptionWhenBlankString() {
-//        assertThrows(IllegalArgumentException.class, () -> spinWords.spinWords("    "));
-        arg = "    ";
-        expected = "";
-        test();
-    }
-
-    @Test
-    void reverseAllWordsLongerThan5Letters() {
-        arg = "Harry Potter is a wizard who defeated Lord Voldemort.";
-        expected = "yrraH rettoP is a draziw who detaefed Lord .tromedloV";
-        test();
-    }
-
-    private void test() {
-        String actual = spinWords.spinWords(arg);
-        assertEquals(expected, actual);
-    }
-
 }

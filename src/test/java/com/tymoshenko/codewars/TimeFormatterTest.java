@@ -1,8 +1,9 @@
 package com.tymoshenko.codewars;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * <p>
@@ -19,17 +20,16 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class TimeFormatterTest {
 
-    @Test
-    void exampleTests() {
-        assertEquals("1 second", TimeFormatter.formatDuration(1));
-        assertEquals("1 minute and 2 seconds", TimeFormatter.formatDuration(62));
-        assertEquals("2 minutes", TimeFormatter.formatDuration(120));
-        assertEquals("1 hour", TimeFormatter.formatDuration(3600));
-        assertEquals("1 hour, 1 minute and 2 seconds", TimeFormatter.formatDuration(3662));
-    }
-
-    @Test
-    void negativeDuration() {
-        assertEquals("5 minutes ago", TimeFormatter.formatDuration(-5 * 60));
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1:1 second",
+            "62:1 minute and 2 seconds",
+            "120:2 minutes",
+            "3600:1 hour",
+            "3662:1 hour, 1 minute and 2 seconds",
+            "-300:5 minutes ago"
+    }, delimiter = ':')
+    void timeFormatting(int seconds, String humanReadableTime) {
+        assertEquals(humanReadableTime, TimeFormatter.formatDuration(seconds));
     }
 }
