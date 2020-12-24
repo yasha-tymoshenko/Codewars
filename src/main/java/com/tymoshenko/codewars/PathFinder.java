@@ -56,9 +56,6 @@ public class PathFinder {
     }
 
     private void visitNeighbours(Vertex v) {
-        if (v.isVisited()) {
-            return;
-        }
         Queue<Vertex> neighbours = getNeighbours(v);
         while (!neighbours.isEmpty()) {
             Vertex neighbour = neighbours.poll();
