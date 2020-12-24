@@ -9,12 +9,13 @@ import java.util.Arrays;
  */
 public class PathFinderCanYouReachTheExit {
 
-    public static final int INFINITY = 10_000_000;
-    private int[][] board;
+    private static final int INFINITY = 10_000_000;
 
     public static boolean pathFinder(String maze) {
         return maze != null && !maze.isBlank() && new PathFinderCanYouReachTheExit(maze).isExitReachable();
     }
+
+    private int[][] board;
 
     public PathFinderCanYouReachTheExit(String maze) {
         initBoard(maze);
