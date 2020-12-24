@@ -24,9 +24,9 @@ public class PathFinder {
     }
 
     private int findShortestPath() {
-        List<Node> nodes = new ArrayList<>(adjacencyMatrix.keySet());
-        Node start = nodes.get(0);
-        Node finish = nodes.get(nodes.size() - 1);
+        Deque<Node> nodes = new LinkedList<>(adjacencyMatrix.keySet());
+        Node start = Objects.requireNonNull(nodes.peekFirst());
+        Node finish = Objects.requireNonNull(nodes.peekLast());
 
         start.distance = 0;
         visitNeighbours(start);
