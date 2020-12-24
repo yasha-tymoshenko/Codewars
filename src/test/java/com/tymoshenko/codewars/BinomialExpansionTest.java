@@ -1,8 +1,13 @@
 package com.tymoshenko.codewars;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.of;
 
 /**
  * The purpose of this kata is to write a program that can do some algebra.
@@ -23,44 +28,38 @@ import static org.junit.jupiter.api.Assertions.*;
  * If the power of the term is 1, the carrot and power should be excluded.
  */
 class BinomialExpansionTest {
-    @Test
-    void testBPositive() {
-        assertEquals("1", BinomialExpansion.expand("(x+1)^0"));
-        assertEquals("x+1", BinomialExpansion.expand("(x+1)^1"));
-        assertEquals("x^2+2x+1", BinomialExpansion.expand("(x+1)^2"));
+
+    @ParameterizedTest
+    @MethodSource
+    void testBinomialExpansion(String binom, String polynom) {
+        assertEquals(polynom, BinomialExpansion.expand(binom));
     }
 
-    @Test
-    void testBNegative() {
-        assertEquals("1", BinomialExpansion.expand("(x-1)^0"));
-        assertEquals("x-1", BinomialExpansion.expand("(x-1)^1"));
-        assertEquals("x^2-2x+1", BinomialExpansion.expand("(x-1)^2"));
-    }
-
-    @Test
-    void testAPositive() {
-        assertEquals("625m^4+1500m^3+1350m^2+540m+81", BinomialExpansion.expand("(5m+3)^4"));
-        assertEquals("8x^3-36x^2+54x-27", BinomialExpansion.expand("(2x-3)^3"));
-        assertEquals("1", BinomialExpansion.expand("(7x-7)^0"));
-    }
-
-    @Test
-    void testANegative() {
-        assertEquals("625m^4-1500m^3+1350m^2-540m+81", BinomialExpansion.expand("(-5m+3)^4"));
-        assertEquals("-8k^3-36k^2-54k-27", BinomialExpansion.expand("(-2k-3)^3"));
-        assertEquals("1", BinomialExpansion.expand("(-7x-7)^0"));
-        assertEquals("-x-1", BinomialExpansion.expand("(-x-1)^1"));
-        assertEquals("-x^3-6x^2-12x-8", BinomialExpansion.expand("(-x-2)^3"));
-    }
-
-    @Test
-    void testBZero() {
-        assertEquals("81t^2", BinomialExpansion.expand("(9t+0)^2"));
-    }
-
-    @Test
-    void testBigN() {
-        assertEquals("43046721j^8-344373768j^7+1205308188j^6-2410616376j^5+3013270470j^4-2410616376j^3+" +
-                "1205308188j^2-344373768j+43046721", BinomialExpansion.expand("(9j-9)^8"));
+    @SuppressWarnings("unused")
+    static Stream<Arguments> testBinomialExpansion() {
+        return Stream.of(
+                // B positive
+                of("(x+1)^0", "1"),
+                of("(x+1)^1", "x+1"),
+                of("(x+1)^2", "x^2+2x+1"),
+                // B negative
+                of("(x-1)^0", "1"),
+                of("(x-1)^1", "x-1"),
+                of("(x-1)^2", "x^2-2x+1"),
+                // A positive
+                of("(5m+3)^4", "625m^4+1500m^3+1350m^2+540m+81"),
+                of("(2x-3)^3", "8x^3-36x^2+54x-27"),
+                of("(7x-7)^0", "1"),
+                // A negative
+                of("(-5m+3)^4", "625m^4-1500m^3+1350m^2-540m+81"),
+                of("(-2k-3)^3", "-8k^3-36k^2-54k-27"),
+                of("(-7x-7)^0", "1"),
+                of("(-x-1)^1", "-x-1"),
+                of("(-x-2)^3", "-x^3-6x^2-12x-8"),
+                // B zero
+                of("(9t+0)^2", "81t^2"),
+                // N big
+                of("(9j-9)^8", "43046721j^8-344373768j^7+1205308188j^6-2410616376j^5+3013270470j^4-2410616376j^3+1205308188j^2-344373768j+43046721")
+        );
     }
 }
