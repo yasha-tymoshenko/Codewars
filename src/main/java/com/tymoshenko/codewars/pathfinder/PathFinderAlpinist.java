@@ -42,7 +42,8 @@ public class PathFinderAlpinist {
         start.distance = 0;
         while (!unvisited.isEmpty()) {
             MountainNode next = nearest(unvisited);
-            visitNeighbours(next, unvisited);
+            unvisited.remove(next);
+            visitNeighbours(next);
         }
 
 //        System.out.println("\nPath:");
@@ -62,10 +63,13 @@ public class PathFinderAlpinist {
         return nearest;
     }
 
-    private void visitNeighbours(MountainNode node, LinkedList<MountainNode> unvisited) {
+    private void visitNeighbours(MountainNode node) {
         Queue<MountainNode> neighbours = getNeighbours(node);
         while (!neighbours.isEmpty()) {
             MountainNode neighbour = neighbours.poll();
+            if (neighbour.visited) {
+                continue;
+            }
             int distance = node.distance + edgesWeightMap.get(edge(node, neighbour));
             if (neighbour.distance > distance) {
                 neighbour.distance = distance;
@@ -74,7 +78,6 @@ public class PathFinderAlpinist {
         }
         // Visited means the distance to all it's neighbours was calculated.
         node.visited = true;
-        unvisited.remove(node);
     }
 
     private Queue<MountainNode> getNeighbours(MountainNode node) {
