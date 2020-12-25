@@ -17,7 +17,7 @@ class PathFinderAlpinistTest {
                         "010\n" +
                         "010",
 
-                c = "010\n" +
+                c =     "010\n" +
                         "101\n" +
                         "010",
 
@@ -33,7 +33,7 @@ class PathFinderAlpinistTest {
                         "077770\n" +
                         "000007",
 
-                f = "777000\n" +
+                f =     "777000\n" +
                         "007000\n" +
                         "007000\n" +
                         "007000\n" +
@@ -67,17 +67,50 @@ class PathFinderAlpinistTest {
                         "290998266920667698\n" +
                         "294632226986682816\n" +
                         "347424608642463728\n" +
-                        "579316793414725367";
+                        "579316793414725367",
+
+                j =
+                                "788388205728\n" +
+                                "608755702236\n" +
+                                "208716926147\n" +
+                                "989734777344\n" +
+                                "872391490949\n" +
+                                "975927777742\n" +
+                                "464055101104\n" +
+                                "222185569118\n" +
+                                "222470175547\n" +
+                                "352119064231\n" +
+                                "320183798486\n" +
+                                "426257061280\n",
+
+                k =
+                        "44400\n" +
+                        "00400\n" +
+                        "04440\n" +
+                        "04090\n" +
+                        "04444\n",
+
+                l =
+                                "02837\n" +
+                                "20221\n" +
+                                "88460\n" +
+                                "81188\n" +
+                                "88763";
+// 4  4  4  0  0  0  0  0  4
+// 4  4  4  4  4  4  4  4  4  4  4
 
 
-//        assertEquals(0, PathFinderAlpinist.pathFinder(a));
-//        assertEquals(2, PathFinderAlpinist.pathFinder(b));
-//        assertEquals(4, PathFinderAlpinist.pathFinder(c));
-//        assertEquals(42, PathFinderAlpinist.pathFinder(d));
-//        assertEquals(14, PathFinderAlpinist.pathFinder(e));
-//        assertEquals(0, PathFinderAlpinist.pathFinder(f));
-//        assertEquals(4, PathFinderAlpinist.pathFinder(g));
-//        assertEquals(0, PathFinderAlpinist.pathFinder(h));
+        assertEquals(0, PathFinderAlpinist.pathFinder(a));
+        assertEquals(2, PathFinderAlpinist.pathFinder(b));
+        assertEquals(4, PathFinderAlpinist.pathFinder(c));
+        assertEquals(42, PathFinderAlpinist.pathFinder(d));
+        assertEquals(14, PathFinderAlpinist.pathFinder(e));
+        assertEquals(0, PathFinderAlpinist.pathFinder(f));
+        assertEquals(4, PathFinderAlpinist.pathFinder(g));
+        assertEquals(0, PathFinderAlpinist.pathFinder(h));
         assertEquals(48, PathFinderAlpinist.pathFinder(i));
+        assertEquals(35, PathFinderAlpinist.pathFinder(j));
+        assertEquals(0, PathFinderAlpinist.pathFinder(k));
+        assertEquals(13, PathFinderAlpinist.pathFinder(l));
     }
 }

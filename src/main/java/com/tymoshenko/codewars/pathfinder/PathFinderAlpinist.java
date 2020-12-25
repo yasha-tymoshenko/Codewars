@@ -1,6 +1,7 @@
 package com.tymoshenko.codewars.pathfinder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -19,13 +20,14 @@ public class PathFinderAlpinist {
     }
 
     private final Map<MountainNode, Queue<MountainNode>> adjacencyMatrix;
-    private final Map<String, Integer> edgesWeighMap;
+    private final Map<String, Integer> edgesWeightMap;
 
     public PathFinderAlpinist(String maze) {
+        System.out.println("\n" + maze + "\n");
         adjacencyMatrix = buildAdjacencyMatrix(maze);
-        edgesWeighMap = new TreeMap<>();
+        edgesWeightMap = new TreeMap<>();
         adjacencyMatrix.forEach((mountain, neighbours) -> neighbours
-                .forEach(neighbour -> edgesWeighMap
+                .forEach(neighbour -> edgesWeightMap
                         .put(edge(mountain, neighbour), Math.abs(mountain.altitude - neighbour.altitude))));
     }
 
@@ -37,27 +39,36 @@ public class PathFinderAlpinist {
         MountainNode start = nodes.peekFirst();
         MountainNode finish = nodes.peekLast();
 
+        Queue<MountainNode> unvisited = nodes.stream()
+                .filter(n -> !n.equals(start))
+                .collect(Collectors.toCollection(LinkedList::new));
+
         start.distance = 0;
-        visitNeighbours(start);
-        Queue<MountainNode> unvisited = getNeighbours(start);
+        visitNeighbours(start, unvisited);
         while (!unvisited.isEmpty()) {
             MountainNode next = unvisited.poll();
-            visitNeighbours(next);
-            getNeighbours(next).stream()
-                    .filter(neighbour -> !neighbour.visited && !unvisited.contains(neighbour))
-                    .forEach(unvisited::add);
+            visitNeighbours(next, unvisited);
         }
+
+        System.out.println("\nPath:");
+        System.out.print(start.altitude + "  ");
+        finish.path.forEach(m -> System.out.print(m.altitude + "  "));
+
         return finish.visited ? finish.distance : -1;
     }
 
-    private void visitNeighbours(MountainNode mountain) {
+    private void visitNeighbours(MountainNode mountain, Queue<MountainNode> unvisited) {
         Queue<MountainNode> neighbours = getNeighbours(mountain);
         while (!neighbours.isEmpty()) {
             MountainNode neighbour = neighbours.poll();
-            int distanceToNeighbour = mountain.distance + edgesWeighMap.get(edge(mountain, neighbour));
+            int distanceToNeighbour = mountain.distance + edgesWeightMap.get(edge(mountain, neighbour));
             if (neighbour.distance > distanceToNeighbour) {
                 neighbour.distance = distanceToNeighbour;
                 neighbour.addToPath(mountain);
+                if (neighbour.visited && (neighbour.x != 0 && neighbour.y != 0)) {
+                    neighbour.visited = false;
+                    unvisited.add(neighbour);
+                }
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
