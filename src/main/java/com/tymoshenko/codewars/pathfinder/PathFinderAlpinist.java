@@ -18,20 +18,16 @@ public class PathFinderAlpinist {
                 : new PathFinderAlpinist(maze).findShortestPath();
     }
 
-    private final Map<MountainNode, Queue<MountainNode>> adjacencyMatrix;
-    private final Map<String, Integer> edgesWeightMap;
+    private Map<MountainNode, Queue<MountainNode>> adjacencyMap;
+    private Map<String, Integer> weightsMap;
 
     public PathFinderAlpinist(String maze) {
 //        System.out.println("\n" + maze + "\n");
-        adjacencyMatrix = buildAdjacencyMatrix(maze);
-        edgesWeightMap = new TreeMap<>();
-        adjacencyMatrix.forEach((mountain, neighbours) -> neighbours
-                .forEach(neighbour -> edgesWeightMap
-                        .put(edge(mountain, neighbour), Math.abs(mountain.altitude - neighbour.altitude))));
+        initGraph(maze);
     }
 
     private int findShortestPath() {
-        Deque<MountainNode> nodes = new LinkedList<>(adjacencyMatrix.keySet());
+        Deque<MountainNode> nodes = new LinkedList<>(adjacencyMap.keySet());
         if (nodes.isEmpty()) {
             return 0;
         }
@@ -70,7 +66,7 @@ public class PathFinderAlpinist {
             if (neighbour.visited) {
                 continue;
             }
-            int distance = node.distance + edgesWeightMap.get(edge(node, neighbour));
+            int distance = node.distance + weightsMap.get(edge(node, neighbour));
             if (neighbour.distance > distance) {
                 neighbour.distance = distance;
                 neighbour.addToPath(node);
@@ -81,14 +77,14 @@ public class PathFinderAlpinist {
     }
 
     private Queue<MountainNode> getNeighbours(MountainNode node) {
-        return new LinkedList<>(adjacencyMatrix.get(node));
+        return new LinkedList<>(adjacencyMap.get(node));
     }
 
     private String edge(MountainNode node, MountainNode neighbour) {
         return String.format("%s->%s", node.toString(), neighbour.toString());
     }
 
-    private Map<MountainNode, Queue<MountainNode>> buildAdjacencyMatrix(String maze) {
+    private void initGraph(String maze) {
         String[] mazeRows = maze.split("\n");
         Map<String, MountainNode> nodeMap = new HashMap<>();
         for (int x = 0; x < mazeRows.length; x++) {
@@ -97,12 +93,17 @@ public class PathFinderAlpinist {
                 nodeMap.put(xy.toString(), xy);
             }
         }
-        return nodeMap.values().stream()
-                .collect(toMap(node -> node, node -> node.neighbourCoordinates()
-                                .filter(nodeMap::containsKey)
-                                .map(nodeMap::get)
-                                .collect(toCollection(LinkedList::new)),
-                        (a, b) -> b, TreeMap::new));
+        adjacencyMap = new TreeMap<>();
+        weightsMap = new TreeMap<>();
+        for (MountainNode node : nodeMap.values()) {
+            Queue<MountainNode> neighbours = node.neighbourCoordinates()
+                    .filter(nodeMap::containsKey)
+                    .map(nodeMap::get)
+                    .collect(toCollection(LinkedList::new));
+            adjacencyMap.put(node, neighbours);
+            neighbours.forEach(neighbour ->
+                    weightsMap.put(edge(node, neighbour), Math.abs(node.altitude - neighbour.altitude)));
+        }
     }
 }
 
