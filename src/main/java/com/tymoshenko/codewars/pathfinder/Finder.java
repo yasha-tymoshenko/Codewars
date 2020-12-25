@@ -12,6 +12,7 @@ import java.util.stream.Stream;
  */
 public class Finder {
 
+
     private static final int INFINITY = 10_000_000;
 
     public static int pathFinder(String maze) {
@@ -30,7 +31,7 @@ public class Finder {
 
     private int findShortestPath() {
         distances[0][0] = 0;
-        List<Point> unvisited = unvisited();
+        List<Point> unvisited = allCoordinates();
         while (!unvisited.isEmpty()) {
             Point nearest = nearest(unvisited);
             unvisited.remove(nearest);
@@ -40,29 +41,27 @@ public class Finder {
         return distances[maze.length - 1][maze.length - 1];
     }
 
-    private List<Point> unvisited() {
+    private List<Point> allCoordinates() {
         List<Point> unvisited = new LinkedList<>();
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze.length; j++) {
-                if (!visited[i][j]) {
-                    unvisited.add(new Point(i, j));
-                }
+                unvisited.add(new Point(i, j));
             }
         }
         return unvisited;
     }
 
     private Point nearest(List<Point> unvisited) {
-        Point p = unvisited.get(0);
-        int minD = distances[p.x][p.y];
+        Point nearest = unvisited.get(0);
+        int minD = distances[nearest.x][nearest.y];
         for (int i = 1; i < unvisited.size(); i++) {
             Point next = unvisited.get(i);
             if (minD > distances[next.x][next.y]) {
                 minD = distances[next.x][next.y];
-                p = next;
+                nearest = next;
             }
         }
-        return p;
+        return nearest;
     }
 
     private void visitNeighbours(int x, int y) {
@@ -74,6 +73,7 @@ public class Finder {
         );
         neighbours
                 .filter(p -> p.x >= 0 && p.x < maze.length && p.y >= 0 && p.y < maze.length)
+                .filter(p -> !visited[p.x][p.y])
                 .forEach(neighbour -> {
                     int d = distances[x][y] + Math.abs(maze[x][y] - maze[neighbour.x][neighbour.y]);
                     if (distances[neighbour.x][neighbour.y] > d) {
@@ -84,6 +84,7 @@ public class Finder {
 
     private void initMaze(String text) {
         String[] mazeRows = text.split("\n");
+
         System.out.printf("%n%nMaze %d*%d", mazeRows.length, mazeRows.length);
 
         maze = new int[mazeRows.length][];
