@@ -42,9 +42,6 @@ public class PathFinderAlpinist {
         start.distance = 0;
         while (!unvisited.isEmpty()) {
             MountainNode next = nearest(unvisited);
-            if (next == null) {
-                break;
-            }
             visitNeighbours(next, unvisited);
         }
 
@@ -56,41 +53,36 @@ public class PathFinderAlpinist {
     }
 
     private MountainNode nearest(LinkedList<MountainNode> unvisited) {
-        if (unvisited.isEmpty()) {
-            return null;
-        }
         MountainNode nearest = unvisited.getFirst();
-        int minD = nearest.distance;
         for (int i = 1; i < unvisited.size(); i++) {
-            if (minD > unvisited.get(i).distance) {
+            if (nearest.distance > unvisited.get(i).distance) {
                 nearest = unvisited.get(i);
-                minD = nearest.distance;
             }
         }
         return nearest;
     }
 
-    private void visitNeighbours(MountainNode mountain, LinkedList<MountainNode> unvisited) {
-        Queue<MountainNode> neighbours = getNeighbours(mountain);
+    private void visitNeighbours(MountainNode node, LinkedList<MountainNode> unvisited) {
+        Queue<MountainNode> neighbours = getNeighbours(node);
         while (!neighbours.isEmpty()) {
             MountainNode neighbour = neighbours.poll();
-            int distanceToNeighbour = mountain.distance + edgesWeightMap.get(edge(mountain, neighbour));
-            if (neighbour.distance > distanceToNeighbour) {
-                neighbour.distance = distanceToNeighbour;
-                neighbour.addToPath(mountain);
+            int distance = node.distance + edgesWeightMap.get(edge(node, neighbour));
+            if (neighbour.distance > distance) {
+                neighbour.distance = distance;
+                neighbour.addToPath(node);
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
-        mountain.visited = true;
-        unvisited.remove(mountain);
+        node.visited = true;
+        unvisited.remove(node);
     }
 
-    private Queue<MountainNode> getNeighbours(MountainNode xy) {
-        return new LinkedList<>(adjacencyMatrix.get(xy));
+    private Queue<MountainNode> getNeighbours(MountainNode node) {
+        return new LinkedList<>(adjacencyMatrix.get(node));
     }
 
-    private String edge(MountainNode mountain, MountainNode neighbour) {
-        return String.format("%s->%s", mountain.toString(), neighbour.toString());
+    private String edge(MountainNode node, MountainNode neighbour) {
+        return String.format("%s->%s", node.toString(), neighbour.toString());
     }
 
     private Map<MountainNode, Queue<MountainNode>> buildAdjacencyMatrix(String maze) {
