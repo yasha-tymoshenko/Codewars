@@ -1,10 +1,10 @@
 package com.tymoshenko.codewars.pathfinder;
 
-import java.awt.Point;
-import java.util.Iterator;
+import java.awt.*;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * 3 kyu
@@ -12,7 +12,6 @@ import java.util.stream.Stream;
  * https://www.codewars.com/kata/576986639772456f6f00030c/train/java
  */
 public class Finder {
-
 
     private static final int INFINITY = 10_000_000;
 
@@ -36,8 +35,7 @@ public class Finder {
         while (!unvisited.isEmpty()) {
             Point nearest = nearest(unvisited);
             unvisited.remove(nearest);
-            visited[nearest.x][nearest.y] = true;
-            visitNeighbours(nearest.x, nearest.y);
+            visitNeighbours(nearest);
         }
         return distances[maze.length - 1][maze.length - 1];
     }
@@ -52,36 +50,39 @@ public class Finder {
         return unvisited;
     }
 
-    private Point nearest(LinkedList<Point> unvisited) {
-        Iterator<Point> iterator = unvisited.iterator();
-        Point nearest = iterator.next();
+    private Point nearest(List<Point> unvisited) {
+        Point nearest = unvisited.get(0);
+        List<Point> neighbours = neighbours(nearest);
         int minD = distances[nearest.x][nearest.y];
-        while (iterator.hasNext()) {
-            Point next = iterator.next();
-            if (minD > distances[next.x][next.y]) {
-                minD = distances[next.x][next.y];
-                nearest = next;
+        for (Point neighbour : neighbours) {
+            if (minD > distances[neighbour.x][neighbour.y]) {
+                minD = distances[neighbour.x][neighbour.y];
+                nearest = neighbour;
             }
         }
         return nearest;
     }
 
-    private void visitNeighbours(int x, int y) {
-        Stream<Point> neighbours = Stream.of(
-                new Point(x, y - 1),
-                new Point(x, y + 1),
-                new Point(x - 1, y),
-                new Point(x + 1, y)
-        );
-        neighbours
-                .filter(p -> p.x >= 0 && p.x < maze.length && p.y >= 0 && p.y < maze.length)
-                .filter(p -> !visited[p.x][p.y])
-                .forEach(neighbour -> {
-                    int d = distances[x][y] + Math.abs(maze[x][y] - maze[neighbour.x][neighbour.y]);
-                    if (distances[neighbour.x][neighbour.y] > d) {
-                        distances[neighbour.x][neighbour.y] = d;
-                    }
-                });
+    private void visitNeighbours(Point point) {
+        visited[point.x][point.y] = true;
+        neighbours(point).forEach(neighbour -> {
+            int d = distances[point.x][point.y] + Math.abs(maze[point.x][point.y] - maze[neighbour.x][neighbour.y]);
+            if (distances[neighbour.x][neighbour.y] > d) {
+                distances[neighbour.x][neighbour.y] = d;
+            }
+        });
+    }
+
+    private List<Point> neighbours(Point p) {
+        return Arrays.stream(new Point[]{
+                new Point(p.x, p.y - 1),
+                new Point(p.x, p.y + 1),
+                new Point(p.x - 1, p.y),
+                new Point(p.x + 1, p.y)
+        })
+                .filter(p1 -> p1.x >= 0 && p1.x < maze.length && p1.y >= 0 && p1.y < maze.length)
+                .filter(p1 -> !visited[p1.x][p1.y])
+                .collect(Collectors.toList());
     }
 
     private void initMaze(String text) {
