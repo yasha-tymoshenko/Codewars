@@ -1,7 +1,6 @@
 package com.tymoshenko.codewars.pathfinder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.*;
@@ -23,7 +22,7 @@ public class PathFinderAlpinist {
     private final Map<String, Integer> edgesWeightMap;
 
     public PathFinderAlpinist(String maze) {
-        System.out.println("\n" + maze + "\n");
+//        System.out.println("\n" + maze + "\n");
         adjacencyMatrix = buildAdjacencyMatrix(maze);
         edgesWeightMap = new TreeMap<>();
         adjacencyMatrix.forEach((mountain, neighbours) -> neighbours
@@ -38,26 +37,40 @@ public class PathFinderAlpinist {
         }
         MountainNode start = nodes.peekFirst();
         MountainNode finish = nodes.peekLast();
-
-        Queue<MountainNode> unvisited = nodes.stream()
-                .filter(n -> !n.equals(start))
-                .collect(Collectors.toCollection(LinkedList::new));
+        LinkedList<MountainNode> unvisited = new LinkedList<>(nodes);
 
         start.distance = 0;
-        visitNeighbours(start, unvisited);
         while (!unvisited.isEmpty()) {
-            MountainNode next = unvisited.poll();
+            MountainNode next = nearest(unvisited);
+            if (next == null) {
+                break;
+            }
             visitNeighbours(next, unvisited);
         }
 
-        System.out.println("\nPath:");
-        System.out.print(start.altitude + "  ");
-        finish.path.forEach(m -> System.out.print(m.altitude + "  "));
+//        System.out.println("\nPath:");
+//        System.out.print(start.altitude + "  ");
+//        finish.path.forEach(m -> System.out.print(m.altitude + "  "));
 
         return finish.visited ? finish.distance : -1;
     }
 
-    private void visitNeighbours(MountainNode mountain, Queue<MountainNode> unvisited) {
+    private MountainNode nearest(LinkedList<MountainNode> unvisited) {
+        if (unvisited.isEmpty()) {
+            return null;
+        }
+        MountainNode nearest = unvisited.getFirst();
+        int minD = nearest.distance;
+        for (int i = 1; i < unvisited.size(); i++) {
+            if (minD > unvisited.get(i).distance) {
+                nearest = unvisited.get(i);
+                minD = nearest.distance;
+            }
+        }
+        return nearest;
+    }
+
+    private void visitNeighbours(MountainNode mountain, LinkedList<MountainNode> unvisited) {
         Queue<MountainNode> neighbours = getNeighbours(mountain);
         while (!neighbours.isEmpty()) {
             MountainNode neighbour = neighbours.poll();
@@ -65,14 +78,11 @@ public class PathFinderAlpinist {
             if (neighbour.distance > distanceToNeighbour) {
                 neighbour.distance = distanceToNeighbour;
                 neighbour.addToPath(mountain);
-                if (neighbour.visited && (neighbour.x != 0 && neighbour.y != 0)) {
-                    neighbour.visited = false;
-                    unvisited.add(neighbour);
-                }
             }
         }
         // Visited means the distance to all it's neighbours was calculated.
         mountain.visited = true;
+        unvisited.remove(mountain);
     }
 
     private Queue<MountainNode> getNeighbours(MountainNode xy) {
@@ -147,10 +157,10 @@ class MountainNode implements Comparable<MountainNode> {
 
     public Stream<String> neighbourCoordinates() {
         return Stream.of(
-                coordinate(x - 1, y),
-                coordinate(x + 1, y),
                 coordinate(x, y - 1),
-                coordinate(x, y + 1)
+                coordinate(x, y + 1),
+                coordinate(x - 1, y),
+                coordinate(x + 1, y)
         );
     }
 
