@@ -1,6 +1,7 @@
 package com.tymoshenko.codewars.pathfinder;
 
 import java.awt.Point;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,7 +32,7 @@ public class Finder {
 
     private int findShortestPath() {
         distances[0][0] = 0;
-        List<Point> unvisited = allCoordinates();
+        LinkedList<Point> unvisited = allCoordinates();
         while (!unvisited.isEmpty()) {
             Point nearest = nearest(unvisited);
             unvisited.remove(nearest);
@@ -41,8 +42,8 @@ public class Finder {
         return distances[maze.length - 1][maze.length - 1];
     }
 
-    private List<Point> allCoordinates() {
-        List<Point> unvisited = new LinkedList<>();
+    private LinkedList<Point> allCoordinates() {
+        LinkedList<Point> unvisited = new LinkedList<>();
         for (int i = 0; i < maze.length; i++) {
             for (int j = 0; j < maze.length; j++) {
                 unvisited.add(new Point(i, j));
@@ -51,11 +52,12 @@ public class Finder {
         return unvisited;
     }
 
-    private Point nearest(List<Point> unvisited) {
-        Point nearest = unvisited.get(0);
+    private Point nearest(LinkedList<Point> unvisited) {
+        Iterator<Point> iterator = unvisited.iterator();
+        Point nearest = iterator.next();
         int minD = distances[nearest.x][nearest.y];
-        for (int i = 1; i < unvisited.size(); i++) {
-            Point next = unvisited.get(i);
+        while (iterator.hasNext()) {
+            Point next = iterator.next();
             if (minD > distances[next.x][next.y]) {
                 minD = distances[next.x][next.y];
                 nearest = next;
