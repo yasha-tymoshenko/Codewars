@@ -34,19 +34,20 @@ public class Finder {
         for (int x = 0; x < maze.length; x++) {
             for (int y = 0; y < maze.length; y++) {
                 int d = INFINITY;
-                Point p = new Point(x, y);
+                Point nearest = new Point(x, y);
+                // Find nearest point.
                 for (int i = 0; i < maze.length; i++) {
                     for (int j = 0; j < maze.length; j++) {
-                        if (visited[i][j]) {
+                        if (visited[i][j] || distances[i][j] == INFINITY) {
                             continue;
                         }
                         if (distances[i][j] < d) {
                             d = distances[i][j];
-                            p = new Point(i, j);
+                            nearest = new Point(i, j);
                         }
                     }
                 }
-                Point nearest = p;
+                // For all adjacent to the nearest point, calculate the min distance from the starting point.
                 Point[] adjacent = adj[nearest.x][nearest.y];
                 for (int i = 0; i < adjacent.length; i++) {
                     Point neighbour = adjacent[i];
@@ -91,9 +92,11 @@ public class Finder {
         for (int x = 0; x < maze.length; x++) {
             weights[x] = new int[mazeRows.length][];
             for (int y = 0; y < maze.length; y++) {
-                weights[x][y] = new int[adj[x][y].length];
-                for (int i = 0; i < adj[x][y].length; i++) {
-                    weights[x][y][i] = Math.abs(maze[x][y] - maze[adj[x][y][i].x][adj[x][y][i].y]);
+                Point[] adjacentPoints = adj[x][y];
+                weights[x][y] = new int[adjacentPoints.length];
+                for (int i = 0; i < adjacentPoints.length; i++) {
+                    Point adjacent = adjacentPoints[i];
+                    weights[x][y][i] = Math.abs(maze[x][y] - maze[adjacent.x][adjacent.y]);
                 }
             }
         }
