@@ -1,56 +1,83 @@
 package com.tymoshenko.codewars.pathfinder;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.of;
 
 class FinderTest {
 
-    @Test
-    void sampleTests() {
+    @MethodSource
+    @ParameterizedTest
+    void smallMazes(String maze, int minClimbs) {
+        assertEquals(minClimbs, Finder.pathFinder(maze));
+    }
 
-        String a = "000\n" +
-                "000\n" +
-                "000",
+    @MethodSource
+    @ParameterizedTest
+    void bigMazes(String maze, int minClimbs) {
+        assertEquals(minClimbs, Finder.pathFinder(maze));
+    }
 
-                b = "010\n" +
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> smallMazes() {
+        return Stream.of(
+                of(
+                        "000\n" +
+                        "000\n" +
+                        "000",
+                        0
+                ),
+                of(
+                        "010\n" +
                         "010\n" +
                         "010",
-
-                c =     "010\n" +
+                        2
+                ),
+                of(
+                        "010\n" +
                         "101\n" +
                         "010",
-
-                d = "0707\n" +
+                        4
+                ),
+                of(
+                        "0707\n" +
                         "7070\n" +
                         "0707\n" +
                         "7070",
-
-                e = "700000\n" +
+                        42
+                ),
+                of(
+                        "700000\n" +
                         "077770\n" +
                         "077770\n" +
                         "077770\n" +
                         "077770\n" +
                         "000007",
-
-                f =     "777000\n" +
+                        14),
+                of(
+                        "777000\n" +
                         "007000\n" +
                         "007000\n" +
                         "007000\n" +
                         "007000\n" +
                         "007777",
-
-                g = "000000\n" +
+                        0),
+                of(
+                        "000000\n" +
                         "000000\n" +
                         "000000\n" +
                         "000010\n" +
                         "000109\n" +
                         "001010",
-
-                h = "8\n",
-
-
-                i =     "328193837181180478\n" +
+                        4),
+                of("8\n", 0),
+                of(
+                        "328193837181180478\n" +
                         "701813772880129216\n" +
                         "141378254125027334\n" +
                         "196616776954351753\n" +
@@ -68,56 +95,43 @@ class FinderTest {
                         "294632226986682816\n" +
                         "347424608642463728\n" +
                         "579316793414725367",
-
-                j =
+                        48),
+                of(
                         "788388205728\n" +
-                                "608755702236\n" +
-                                "208716926147\n" +
-                                "989734777344\n" +
-                                "872391490949\n" +
-                                "975927777742\n" +
-                                "464055101104\n" +
-                                "222185569118\n" +
-                                "222470175547\n" +
-                                "352119064231\n" +
-                                "320183798486\n" +
-                                "426257061280\n",
-
-                k =
+                        "608755702236\n" +
+                        "208716926147\n" +
+                        "989734777344\n" +
+                        "872391490949\n" +
+                        "975927777742\n" +
+                        "464055101104\n" +
+                        "222185569118\n" +
+                        "222470175547\n" +
+                        "352119064231\n" +
+                        "320183798486\n" +
+                        "426257061280\n",
+                        35),
+                of(
                         "44400\n" +
-                                "00400\n" +
-                                "04440\n" +
-                                "04090\n" +
-                                "04444\n",
-
-                l =
+                        "00400\n" +
+                        "04440\n" +
+                        "04090\n" +
+                        "04444\n",
+                        0),
+                of(
                         "02837\n" +
-                                "20221\n" +
-                                "88460\n" +
-                                "81188\n" +
-                                "88763";
-// 4  4  4  0  0  0  0  0  4
-// 4  4  4  4  4  4  4  4  4  4  4
-
-
-        assertEquals(0, PathFinderAlpinist.pathFinder(a));
-        assertEquals(2, PathFinderAlpinist.pathFinder(b));
-        assertEquals(4, PathFinderAlpinist.pathFinder(c));
-        assertEquals(42, PathFinderAlpinist.pathFinder(d));
-        assertEquals(14, PathFinderAlpinist.pathFinder(e));
-        assertEquals(0, PathFinderAlpinist.pathFinder(f));
-        assertEquals(4, PathFinderAlpinist.pathFinder(g));
-        assertEquals(0, PathFinderAlpinist.pathFinder(h));
-        assertEquals(48, PathFinderAlpinist.pathFinder(i));
-        assertEquals(35, PathFinderAlpinist.pathFinder(j));
-        assertEquals(0, PathFinderAlpinist.pathFinder(k));
-        assertEquals(13, PathFinderAlpinist.pathFinder(l));
+                        "20221\n" +
+                        "88460\n" +
+                        "81188\n" +
+                        "88763",
+                        13)
+        );
     }
 
-    @Test
-    void big() {
-        String maze =
-                "37668415566923195410618665938260948787830522300\n" +
+    @SuppressWarnings("unused")
+    private static Stream<Arguments> bigMazes() {
+        return Stream.of(
+                of(
+                        "37668415566923195410618665938260948787830522300\n" +
                         "18517064532889182337179421848838420143743807470\n" +
                         "76686150636109537351989916055210603260157203258\n" +
                         "08055793168815256674338052998970730323109613378\n" +
@@ -163,9 +177,9 @@ class FinderTest {
                         "43238559009113817642289342007593083087010391102\n" +
                         "07710058045785801016555145330323429777618944411\n" +
                         "02892681778754749768031505291521447595537800172\n" +
-                        "45113388825445452185124730031430867309745655463";
-
-        assertEquals(120, Finder.pathFinder(maze));
+                        "45113388825445452185124730031430867309745655463",
+                        120
+                )
+        );
     }
-
 }
