@@ -4,6 +4,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,11 +17,16 @@ public class Chess {
     private static final String LETTERS = "abcdefgh";
     private static final int BOARD_SIZE = 8;
     private static final int INFINITY = 100_000;
+    private static final Map<Point, List<Point>> KNIGHT_MOVES_FOR_EACH_CHESSBOARD_SQUARE;
+    private static final Pattern CHESS_COORDINATE_PATTERN = Pattern.compile("^[a-h][1-8]");
 
-    private static Map<Point, List<Point>> reachableSquaresMap;
+    private int[][] distances;
+    private boolean[][] visited;
+    private Map<Point, List<String>> pathMap;
+
 
     static {
-        initKnightMoves();
+        KNIGHT_MOVES_FOR_EACH_CHESSBOARD_SQUARE = initKnightMovesForEachChessboardSquare();
     }
 
     /**
@@ -31,18 +37,44 @@ public class Chess {
      * @return the min number of steps to reach the destination
      */
     public static int knight(String start, String finish) {
+        if (start == null || start.isBlank() || finish == null || finish.isBlank()) {
+            throw new IllegalArgumentException("Knights target coordinates must not be empty.");
+        }
+        if (!CHESS_COORDINATE_PATTERN.matcher(start).matches()
+                || !CHESS_COORDINATE_PATTERN.matcher(finish).matches()) {
+            throw new IllegalArgumentException("Malformed chess coordinates.");
+        }
         return new Chess().knightShortestRoute(start, finish);
     }
 
-    private int[][] distances;
-    private boolean[][] visited;
-    private Map<Point, List<String>> pathMap;
+    private static Map<Point, List<Point>> initKnightMovesForEachChessboardSquare() {
+        Map<Point, List<Point>> knightMovesMap = new HashMap<>();
+        for (int x = 0; x < BOARD_SIZE; x++) {
+            for (int y = 0; y < BOARD_SIZE; y++) {
+                knightMovesMap.put(new Point(x, y), Stream.of(
+                        new Point(x - 2, y - 1),
+                        new Point(x - 1, y - 2),
+                        new Point(x - 2, y + 1),
+                        new Point(x - 1, y + 2),
+                        new Point(x + 2, y - 1),
+                        new Point(x + 1, y - 2),
+                        new Point(x + 2, y + 1),
+                        new Point(x + 1, y + 2)
+                )
+                        .filter(point -> point.x >= 0 && point.x < BOARD_SIZE
+                                && point.y >= 0 && point.y < BOARD_SIZE)
+                        .collect(Collectors.toList()));
+            }
+        }
+        return knightMovesMap;
+    }
 
     public int knightShortestRoute(String start, String finish) {
         Point begin = chessCoordinateToPoint(start);
         Point end = chessCoordinateToPoint(finish);
-        initKnightsRouteFromStartingPoint();
-        Queue<Point> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(point -> distances[point.x][point.y]));
+        initKnightsRoute();
+        Queue<Point> priorityQueue = new PriorityQueue<>(
+                Comparator.comparingInt(point -> distances[point.x][point.y]));
         distances[begin.x][begin.y] = 0;
         priorityQueue.add(begin);
         while (!priorityQueue.isEmpty()) {
@@ -51,13 +83,12 @@ public class Chess {
                 continue;
             }
             visited[nearestMove.x][nearestMove.y] = true;
-            reachableSquaresMap.get(nearestMove).forEach(followingMove -> {
+            KNIGHT_MOVES_FOR_EACH_CHESSBOARD_SQUARE.get(nearestMove).forEach(followingMove -> {
                 int distance = distances[nearestMove.x][nearestMove.y] + 1;
                 if (distances[followingMove.x][followingMove.y] > distance) {
                     distances[followingMove.x][followingMove.y] = distance;
                     priorityQueue.add(followingMove);
-                    pathMap.get(followingMove).add(pointToChessCoordinate(nearestMove));
-                    pathMap.get(followingMove).addAll(pathMap.get(nearestMove));
+                    addToPath(followingMove, nearestMove);
                 }
             });
         }
@@ -65,18 +96,13 @@ public class Chess {
         return distances[end.x][end.y];
     }
 
-    private void initKnightsRouteFromStartingPoint() {
-        distances = new int[BOARD_SIZE][];
-        visited = new boolean[BOARD_SIZE][];
+    private void initKnightsRoute() {
         pathMap = new HashMap<>();
-        for (int x = 0; x < BOARD_SIZE; x++) {
-            distances[x] = new int[BOARD_SIZE];
-            visited[x] = new boolean[BOARD_SIZE];
-            for (int y = 0; y < BOARD_SIZE; y++) {
-                distances[x][y] = INFINITY;
-                visited[x][y] = false;
-                pathMap.put(new Point(x, y), new ArrayList<>());
-            }
+        distances = new int[BOARD_SIZE][BOARD_SIZE];
+        visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            Arrays.fill(visited[i], false);
+            Arrays.fill(distances[i], INFINITY);
         }
     }
 
@@ -91,38 +117,18 @@ public class Chess {
         return String.format("%s%d", LETTERS.charAt(point.x), (point.y + 1));
     }
 
+    private void addToPath(Point move, Point previousMove) {
+        List<String> previousPath = pathMap.getOrDefault(previousMove, Collections.emptyList());
+        pathMap.computeIfAbsent(move, ignored -> new Stack<>()).add(pointToChessCoordinate(previousMove));
+        pathMap.get(move).addAll(previousPath);
+    }
+
     private void printPath(String start, String finish) {
         Point end = chessCoordinateToPoint(finish);
         List<String> knightMoves = pathMap.get(end);
         Collections.reverse(knightMoves);
         knightMoves.add(finish);
-        System.out.printf("Shortest path from %s to %s: %s.%n", start, finish, String.join(", ", knightMoves));
-    }
-
-    private static void initKnightMoves() {
-        reachableSquaresMap = new HashMap<>();
-        for (int x = 0; x < BOARD_SIZE; x++) {
-            for (int y = 0; y < BOARD_SIZE; y++) {
-                Point point = new Point(x, y);
-                reachableSquaresMap.put(point, knightMoves(point));
-            }
-        }
-    }
-
-    private static List<Point> knightMoves(Point start) {
-        int x = start.x;
-        int y = start.y;
-        return Stream.of(
-                new Point(x - 2, y - 1),
-                new Point(x - 1, y - 2),
-                new Point(x - 2, y + 1),
-                new Point(x - 1, y + 2),
-                new Point(x + 2, y - 1),
-                new Point(x + 1, y - 2),
-                new Point(x + 2, y + 1),
-                new Point(x + 1, y + 2)
-        )
-                .filter(point -> point.x >= 0 && point.x < BOARD_SIZE && point.y >= 0 && point.y < BOARD_SIZE)
-                .collect(Collectors.toList());
+        System.out.printf("Shortest path from %s to %s (%d):\t%s.%n",
+                start, finish, knightMoves.size() - 1, String.join(", ", knightMoves));
     }
 }
