@@ -1,10 +1,7 @@
 package com.tymoshenko.codewars.pathfinder;
 
 import java.awt.*;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -25,8 +22,7 @@ public class Finder {
     private int[][] maze;
     private int[][] distances;
     private boolean[][] visited;
-
-    private Point[][][] adj;
+    private Point[][][] adjacents;
     private int[][][] weights;
 
     public Finder(String maze) {
@@ -34,13 +30,9 @@ public class Finder {
     }
 
     private int findShortestPath() {
-        TreeMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
-
         distances[0][0] = 0;
-        Queue<Point> list = new LinkedList<>();
-        list.add(new Point(0, 0));
-        shortestDistanceMap.put(0, list);
-
+        TreeMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
+        shortestDistanceMap.computeIfAbsent(0, ignored -> new LinkedList<>()).add(new Point(0, 0));
         while (!shortestDistanceMap.isEmpty()) {
             Map.Entry<Integer, Queue<Point>> nearestEntry = shortestDistanceMap.firstEntry();
             Queue<Point> queue = nearestEntry.getValue();
@@ -51,27 +43,17 @@ public class Finder {
                 }
                 visited[nearest.x][nearest.y] = true;
                 // For all adjacent to the nearest point, calculate the min distance from the starting point.
-                Point[] adjacent = adj[nearest.x][nearest.y];
-                for (int i = 0; i < adjacent.length; i++) {
-                    Point neighbour = adjacent[i];
-                    if (visited[neighbour.x][neighbour.y]) {
-                        continue;
-                    }
-                    int d = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
-                    if (distances[neighbour.x][neighbour.y] > d) {
-                        if (shortestDistanceMap.containsKey(d)) {
-                            shortestDistanceMap.get(d).add(neighbour);
-                        } else {
-                            Queue<Point> q = new LinkedList<>();
-                            q.add(neighbour);
-                            shortestDistanceMap.put(d, q);
-                        }
-                        distances[neighbour.x][neighbour.y] = d;
+                Point[] adj = adjacents[nearest.x][nearest.y];
+                for (int i = 0; i < adj.length; i++) {
+                    Point neighbour = adj[i];
+                    int distance = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
+                    if (distances[neighbour.x][neighbour.y] > distance) {
+                        distances[neighbour.x][neighbour.y] = distance;
+                        shortestDistanceMap.computeIfAbsent(distance, ignored -> new LinkedList<>()).add(neighbour);
                     }
                 }
             }
             shortestDistanceMap.remove(nearestEntry.getKey());
-
         }
         return distances[maze.length - 1][maze.length - 1];
     }
@@ -81,18 +63,18 @@ public class Finder {
         maze = new int[mazeRows.length][];
         distances = new int[mazeRows.length][];
         visited = new boolean[mazeRows.length][];
-        adj = new Point[mazeRows.length][][];
+        adjacents = new Point[mazeRows.length][][];
         weights = new int[mazeRows.length][][];
         for (int x = 0; x < mazeRows.length; x++) {
             maze[x] = new int[mazeRows.length];
             distances[x] = new int[mazeRows.length];
             visited[x] = new boolean[mazeRows.length];
-            adj[x] = new Point[mazeRows.length][];
+            adjacents[x] = new Point[mazeRows.length][];
             for (int y = 0; y < mazeRows.length; y++) {
                 maze[x][y] = mazeRows[x].charAt(y) - '0';
                 distances[x][y] = INFINITY;
                 visited[x][y] = false;
-                adj[x][y] = Stream.of(
+                adjacents[x][y] = Stream.of(
                         new Point(x - 1, y),
                         new Point(x + 1, y),
                         new Point(x, y - 1),
@@ -106,7 +88,7 @@ public class Finder {
         for (int x = 0; x < maze.length; x++) {
             weights[x] = new int[mazeRows.length][];
             for (int y = 0; y < maze.length; y++) {
-                Point[] adjacentPoints = adj[x][y];
+                Point[] adjacentPoints = adjacents[x][y];
                 weights[x][y] = new int[adjacentPoints.length];
                 for (int i = 0; i < adjacentPoints.length; i++) {
                     Point adjacent = adjacentPoints[i];
