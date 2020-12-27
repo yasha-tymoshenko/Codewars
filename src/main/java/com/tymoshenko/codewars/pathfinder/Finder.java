@@ -14,12 +14,11 @@ public class Finder {
     private static final int INFINITY = 10_000_000;
 
     public static int pathFinder(String maze) {
-        return maze == null || maze.isBlank() || maze.length() == 1
-                ? 0
-                : new Finder(maze).findShortestPath();
+        if (maze == null || maze.isBlank() || maze.trim().length() == 1) return 0;
+        return new Finder(maze).findShortestPath();
     }
 
-    private int[][] maze;
+    private int n;
     private int[][] distances;
     private boolean[][] visited;
     private Point[][][] adjacents;
@@ -29,7 +28,7 @@ public class Finder {
         initMaze(maze);
     }
 
-    private int findShortestPath() {
+    public int findShortestPath() {
         distances[0][0] = 0;
         TreeMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
         shortestDistanceMap.computeIfAbsent(0, ignored -> new LinkedList<>()).add(new Point(0, 0));
@@ -55,13 +54,13 @@ public class Finder {
             }
             shortestDistanceMap.remove(nearestEntry.getKey());
         }
-        return distances[maze.length - 1][maze.length - 1];
+        return distances[n - 1][n - 1];
     }
 
     private void initMaze(String mazeString) {
         String[] mazeRows = mazeString.split("\n");
-        int n = mazeRows.length;
-        maze = new int[n][];
+        n = mazeRows.length;
+        int[][] maze = new int[n][];
         distances = new int[n][];
         visited = new boolean[n][];
         adjacents = new Point[n][][];
