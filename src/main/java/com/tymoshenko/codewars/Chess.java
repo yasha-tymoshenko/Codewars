@@ -42,8 +42,7 @@ public class Chess {
         Point begin = chessCoordinateToPoint(start);
         Point end = chessCoordinateToPoint(finish);
         initKnightsRouteFromStartingPoint();
-        Queue<Point> priorityQueue = new PriorityQueue<>((o1, o2) ->
-                Integer.compare(distances[o1.x][o2.y], distances[o2.x][o2.y]));
+        Queue<Point> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(o -> distances[o.x][o.y]));
         distances[begin.x][begin.y] = 0;
         priorityQueue.add(begin);
         while (!priorityQueue.isEmpty()) {
