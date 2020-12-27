@@ -30,7 +30,7 @@ public class Finder {
 
     public int findShortestPath() {
         distances[0][0] = 0;
-        TreeMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
+        NavigableMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
         shortestDistanceMap.computeIfAbsent(0, ignored -> new LinkedList<>()).add(new Point(0, 0));
         while (!shortestDistanceMap.isEmpty()) {
             Map.Entry<Integer, Queue<Point>> nearestEntry = shortestDistanceMap.firstEntry();
