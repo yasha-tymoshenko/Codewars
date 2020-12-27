@@ -84,12 +84,10 @@ public class Finder {
         for (int x = 0; x < n; x++) {
             weights[x] = new int[n][];
             for (int y = 0; y < n; y++) {
-                Point[] adjacentPoints = adjacents[x][y];
-                weights[x][y] = new int[adjacentPoints.length];
-                for (int i = 0; i < adjacentPoints.length; i++) {
-                    Point adjacent = adjacentPoints[i];
-                    weights[x][y][i] = Math.abs(maze[x][y] - maze[adjacent.x][adjacent.y]);
-                }
+                int mountainHeight = maze[x][y];
+                weights[x][y] = Arrays.stream(adjacents[x][y])
+                        .mapToInt(adj -> Math.abs(mountainHeight - maze[adj.x][adj.y]))
+                        .toArray();
             }
         }
     }
