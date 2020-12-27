@@ -1,8 +1,9 @@
 package com.tymoshenko.codewars;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -25,12 +26,13 @@ public class Chess {
 
     /**
      * Return the min number of steps for a chess knight to reach the finish square from the starting one.
-     * @param start the coordinates of the knight's original position e.g. "a3".
+     *
+     * @param start  the coordinates of the knight's original position e.g. "a3".
      * @param finish the coordinates of the target square e.g. "h7".
      * @return the min number of steps to reach the destination
      */
-    public static int knight(String start, String  finish) {
-        return  new Chess().knightShortestRoute(start, finish);
+    public static int knight(String start, String finish) {
+        return new Chess().knightShortestRoute(start, finish);
     }
 
     private int[][] distances;
@@ -41,30 +43,26 @@ public class Chess {
         Point begin = chessCoordinateToPoint(start);
         Point end = chessCoordinateToPoint(finish);
         initKnightsRouteFromStartingPoint();
+        Queue<Point> priorityQueue = new PriorityQueue<>((o1, o2) ->
+                Integer.compare(distances[o1.x][o2.y], distances[o2.x][o2.y]));
         distances[begin.x][begin.y] = 0;
-        NavigableMap<Integer, Queue<Point>> priorityQueue = new TreeMap<>();
-        priorityQueue.computeIfAbsent(0, integer -> new LinkedList<>()).add(begin);
+        priorityQueue.add(begin);
         while (!priorityQueue.isEmpty()) {
-            Map.Entry<Integer, Queue<Point>> firstEntry = priorityQueue.firstEntry();
-            Queue<Point> sameDistanceMoves = firstEntry.getValue();
-            while (!sameDistanceMoves.isEmpty()) {
-                Point nearestMove = sameDistanceMoves.poll();
-                if (visited[nearestMove.x][nearestMove.y]) {
-                    continue;
-                }
-                visited[nearestMove.x][nearestMove.y] = true;
-                Queue<Point> reachableSquares = reachableSquaresMap.get(nearestMove);
-                for (Point reachableSquare : reachableSquares) {
-                    int distance = distances[nearestMove.x][nearestMove.y] + 1;
-                    if (distances[reachableSquare.x][reachableSquare.y] > distance) {
-                        distances[reachableSquare.x][reachableSquare.y] = distance;
-                        priorityQueue.computeIfAbsent(distance, ignored -> new LinkedList<>()).add(reachableSquare);
-                        pathMap.get(reachableSquare).add(pointToChessCoordinate(nearestMove));
-                        pathMap.get(reachableSquare).addAll(pathMap.get(nearestMove));
-                    }
+            Point nearestMove = priorityQueue.poll();
+            if (visited[nearestMove.x][nearestMove.y]) {
+                continue;
+            }
+            visited[nearestMove.x][nearestMove.y] = true;
+            Queue<Point> reachableSquares = reachableSquaresMap.get(nearestMove);
+            for (Point followingMove : reachableSquares) {
+                int distance = distances[nearestMove.x][nearestMove.y] + 1;
+                if (distances[followingMove.x][followingMove.y] > distance) {
+                    distances[followingMove.x][followingMove.y] = distance;
+                    priorityQueue.add(followingMove);
+                    pathMap.get(followingMove).add(pointToChessCoordinate(nearestMove));
+                    pathMap.get(followingMove).addAll(pathMap.get(nearestMove));
                 }
             }
-            priorityQueue.remove(firstEntry.getKey());
         }
         printPath(start, finish);
         return distances[end.x][end.y];
@@ -97,16 +95,15 @@ public class Chess {
     }
 
     private void printPath(String start, String finish) {
-        System.out.println("\nShortest path from "  + start + " to " + finish);
         Point end = chessCoordinateToPoint(finish);
-        List<String> strings = pathMap.get(end);
-        Collections.reverse(strings);
-        strings.add(finish);
-        strings.forEach(s -> System.out.print(s + " "));
+        List<String> knightMoves = pathMap.get(end);
+        Collections.reverse(knightMoves);
+        knightMoves.add(finish);
+        System.out.printf("Shortest path from %s to %s: %s.%n", start, finish, String.join(", ", knightMoves));
     }
 
     private static void initKnightMoves() {
-        reachableSquaresMap = new TreeMap<>(new PointComparator());
+        reachableSquaresMap = new HashMap<>();
         for (int x = 0; x < BOARD_SIZE; x++) {
             for (int y = 0; y < BOARD_SIZE; y++) {
                 Point point = new Point(x, y);
@@ -131,13 +128,4 @@ public class Chess {
                 .filter(point -> point.x >= 0 && point.x < BOARD_SIZE && point.y >= 0 && point.y < BOARD_SIZE)
                 .collect(toCollection(LinkedList::new));
     }
-
-    private static class PointComparator implements Comparator<Point> {
-        @Override
-        public int compare(Point o1, Point o2) {
-            int compareX = Integer.compare(o1.x, o2.x);
-            return compareX == 0 ? Integer.compare(o1.y, o2.y) : compareX;
-        }
-    }
-
 }
