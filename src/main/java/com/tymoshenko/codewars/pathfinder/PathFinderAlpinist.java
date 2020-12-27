@@ -9,6 +9,9 @@ import static java.util.stream.Collectors.*;
  * 3 kyu
  * <p>
  * https://www.codewars.com/kata/576986639772456f6f00030c/train/java
+ *
+ * For the real solution, see Finder class in this package.
+ * @see Finder
  */
 public class PathFinderAlpinist {
 
