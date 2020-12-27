@@ -9,13 +9,13 @@ import java.util.stream.Stream;
  * <p>
  * https://www.codewars.com/kata/576986639772456f6f00030c/train/java
  */
-public class Finder {
+public class PathFinderAlpinist {
 
     private static final int INFINITY = 10_000_000;
 
     public static int pathFinder(String maze) {
         if (maze == null || maze.isBlank() || maze.trim().length() == 1) return 0;
-        return new Finder(maze).findShortestPath();
+        return new PathFinderAlpinist(maze).findShortestPath();
     }
 
     private int n;
@@ -24,7 +24,7 @@ public class Finder {
     private Point[][][] adjacents;
     private int[][][] weights;
 
-    public Finder(String maze) {
+    public PathFinderAlpinist(String maze) {
         initMaze(maze);
     }
 
@@ -39,10 +39,9 @@ public class Finder {
                 continue;
             }
             visited[nearest.x][nearest.y] = true;
-            // For all adjacent to the nearest point, calculate the min distance from the starting point.
-            Point[] adj = adjacents[nearest.x][nearest.y];
-            for (int i = 0; i < adj.length; i++) {
-                Point neighbour = adj[i];
+            Point[] adjacentPoints = adjacents[nearest.x][nearest.y];
+            for (int i = 0; i < adjacentPoints.length; i++) {
+                Point neighbour = adjacentPoints[i];
                 int distance = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
                 if (distances[neighbour.x][neighbour.y] > distance) {
                     distances[neighbour.x][neighbour.y] = distance;

@@ -9,18 +9,18 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-class FinderTest {
+class PathFinderAlpinistTest {
 
     @MethodSource
     @ParameterizedTest
     void smallMazes(String maze, int minClimbs) {
-        assertEquals(minClimbs, Finder.pathFinder(maze));
+        assertEquals(minClimbs, PathFinderAlpinist.pathFinder(maze));
     }
 
     @MethodSource
     @ParameterizedTest
     void bigMazes(String maze, int minClimbs) {
-        assertEquals(minClimbs, Finder.pathFinder(maze));
+        assertEquals(minClimbs, PathFinderAlpinist.pathFinder(maze));
     }
 
     @SuppressWarnings("unused")
