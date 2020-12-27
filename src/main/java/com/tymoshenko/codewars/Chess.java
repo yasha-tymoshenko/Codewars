@@ -2,6 +2,7 @@ package com.tymoshenko.codewars;
 
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -34,10 +35,11 @@ public class Chess {
 
     private int[][] distances;
     private boolean[][] visited;
+    private Map<Point, List<String>> pathMap;
 
     public int knightShortestRoute(String start, String finish) {
-        Point begin = parseSquareCoordinates(start);
-        Point end = parseSquareCoordinates(finish);
+        Point begin = chessCoordinateToPoint(start);
+        Point end = chessCoordinateToPoint(finish);
         initKnightsRouteFromStartingPoint();
         distances[begin.x][begin.y] = 0;
         NavigableMap<Integer, Queue<Point>> priorityQueue = new TreeMap<>();
@@ -57,32 +59,50 @@ public class Chess {
                     if (distances[reachableSquare.x][reachableSquare.y] > distance) {
                         distances[reachableSquare.x][reachableSquare.y] = distance;
                         priorityQueue.computeIfAbsent(distance, ignored -> new LinkedList<>()).add(reachableSquare);
+                        pathMap.get(reachableSquare).add(pointToChessCoordinate(nearestMove));
+                        pathMap.get(reachableSquare).addAll(pathMap.get(nearestMove));
                     }
                 }
             }
             priorityQueue.remove(firstEntry.getKey());
         }
+        printPath(start, finish);
         return distances[end.x][end.y];
-    }
-
-    private Point parseSquareCoordinates(String coordinates) {
-        int x = LETTERS.indexOf(coordinates.charAt(0));
-        // The numeration in array starts from 0, not from 1 as in chess board coordinates.
-        int y = coordinates.charAt(1) - '0' - 1;
-        return new Point(x, y);
     }
 
     private void initKnightsRouteFromStartingPoint() {
         distances = new int[BOARD_SIZE][];
         visited = new boolean[BOARD_SIZE][];
+        pathMap = new HashMap<>();
         for (int x = 0; x < BOARD_SIZE; x++) {
             distances[x] = new int[BOARD_SIZE];
             visited[x] = new boolean[BOARD_SIZE];
             for (int y = 0; y < BOARD_SIZE; y++) {
                 distances[x][y] = INFINITY;
                 visited[x][y] = false;
+                pathMap.put(new Point(x, y), new ArrayList<>());
             }
         }
+    }
+
+    private Point chessCoordinateToPoint(String coordinates) {
+        int x = LETTERS.indexOf(coordinates.charAt(0));
+        // The numeration in array starts from 0, not from 1 as in chess board coordinates.
+        int y = coordinates.charAt(1) - '0' - 1;
+        return new Point(x, y);
+    }
+
+    private String pointToChessCoordinate(Point point) {
+        return String.format("%s%d", LETTERS.charAt(point.x), (point.y + 1));
+    }
+
+    private void printPath(String start, String finish) {
+        System.out.println("\nShortest path from "  + start + " to " + finish);
+        Point end = chessCoordinateToPoint(finish);
+        List<String> strings = pathMap.get(end);
+        Collections.reverse(strings);
+        strings.add(finish);
+        strings.forEach(s -> System.out.print(s + " "));
     }
 
     private static void initKnightMoves() {
