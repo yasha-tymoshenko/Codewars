@@ -1,6 +1,10 @@
 package com.tymoshenko.codewars.pathfinder;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 /**
@@ -30,34 +34,44 @@ public class Finder {
     }
 
     private int findShortestPath() {
+        TreeMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
+
         distances[0][0] = 0;
-        for (int x = 0; x < maze.length; x++) {
-            for (int y = 0; y < maze.length; y++) {
-                int d = INFINITY;
-                Point nearest = new Point(x, y);
-                // Find nearest point.
-                for (int i = 0; i < maze.length; i++) {
-                    for (int j = 0; j < maze.length; j++) {
-                        if (visited[i][j] || distances[i][j] == INFINITY) {
-                            continue;
-                        }
-                        if (distances[i][j] < d) {
-                            d = distances[i][j];
-                            nearest = new Point(i, j);
-                        }
-                    }
+        Queue<Point> list = new LinkedList<>();
+        list.add(new Point(0, 0));
+        shortestDistanceMap.put(0, list);
+
+        while (!shortestDistanceMap.isEmpty()) {
+            Map.Entry<Integer, Queue<Point>> nearestEntry = shortestDistanceMap.firstEntry();
+            Queue<Point> queue = nearestEntry.getValue();
+            while (!queue.isEmpty()) {
+                Point nearest = queue.poll();
+                if (visited[nearest.x][nearest.y]) {
+                    continue;
                 }
+                visited[nearest.x][nearest.y] = true;
                 // For all adjacent to the nearest point, calculate the min distance from the starting point.
                 Point[] adjacent = adj[nearest.x][nearest.y];
                 for (int i = 0; i < adjacent.length; i++) {
                     Point neighbour = adjacent[i];
-                    int closestD = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
-                    if (distances[neighbour.x][neighbour.y] > closestD) {
-                        distances[neighbour.x][neighbour.y] = closestD;
+                    if (visited[neighbour.x][neighbour.y]) {
+                        continue;
+                    }
+                    int d = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
+                    if (distances[neighbour.x][neighbour.y] > d) {
+                        if (shortestDistanceMap.containsKey(d)) {
+                            shortestDistanceMap.get(d).add(neighbour);
+                        } else {
+                            Queue<Point> q = new LinkedList<>();
+                            q.add(neighbour);
+                            shortestDistanceMap.put(d, q);
+                        }
+                        distances[neighbour.x][neighbour.y] = d;
                     }
                 }
-                visited[nearest.x][nearest.y] = true;
             }
+            shortestDistanceMap.remove(nearestEntry.getKey());
+
         }
         return distances[maze.length - 1][maze.length - 1];
     }
