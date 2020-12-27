@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * 4 kyu
@@ -24,7 +25,6 @@ public class Chess {
     private boolean[][] visited;
     private Map<Point, List<String>> pathMap;
 
-
     static {
         KNIGHT_MOVES_FOR_EACH_CHESSBOARD_SQUARE = initKnightMovesForEachChessboardSquare();
     }
@@ -38,7 +38,7 @@ public class Chess {
      */
     public static int knight(String start, String finish) {
         if (start == null || start.isBlank() || finish == null || finish.isBlank()) {
-            throw new IllegalArgumentException("Knights target coordinates must not be empty.");
+            throw new IllegalArgumentException("Empty chess coordinates.");
         }
         if (!CHESS_COORDINATE_PATTERN.matcher(start).matches()
                 || !CHESS_COORDINATE_PATTERN.matcher(finish).matches()) {
@@ -63,16 +63,16 @@ public class Chess {
                 )
                         .filter(point -> point.x >= 0 && point.x < BOARD_SIZE
                                 && point.y >= 0 && point.y < BOARD_SIZE)
-                        .collect(Collectors.toList()));
+                        .collect(toList()));
             }
         }
         return knightMovesMap;
     }
 
     public int knightShortestRoute(String start, String finish) {
+        initKnightsRoute();
         Point begin = chessCoordinateToPoint(start);
         Point end = chessCoordinateToPoint(finish);
-        initKnightsRoute();
         Queue<Point> priorityQueue = new PriorityQueue<>(
                 Comparator.comparingInt(point -> distances[point.x][point.y]));
         distances[begin.x][begin.y] = 0;
@@ -109,7 +109,7 @@ public class Chess {
     private Point chessCoordinateToPoint(String coordinates) {
         int x = LETTERS.indexOf(coordinates.charAt(0));
         // The numeration in array starts from 0, not from 1 as in chess board coordinates.
-        int y = coordinates.charAt(1) - '0' - 1;
+        int y = coordinates.charAt(1) - '1';
         return new Point(x, y);
     }
 

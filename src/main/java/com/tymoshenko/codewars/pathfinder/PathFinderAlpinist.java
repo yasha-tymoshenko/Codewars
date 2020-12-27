@@ -55,20 +55,16 @@ public class PathFinderAlpinist {
     private void initMaze(String mazeString) {
         String[] mazeRows = mazeString.split("\n");
         n = mazeRows.length;
-        int[][] maze = new int[n][];
-        distances = new int[n][];
-        visited = new boolean[n][];
-        adjacents = new Point[n][][];
-        weights = new int[n][][];
+        int[][] maze = new int[n][n];
+        distances = new int[n][n];
+        visited = new boolean[n][n];
+        adjacents = new Point[n][n][];
+        weights = new int[n][n][];
         for (int x = 0; x < n; x++) {
-            maze[x] = new int[n];
-            distances[x] = new int[n];
-            visited[x] = new boolean[n];
-            adjacents[x] = new Point[n][];
+            Arrays.fill(distances[x], INFINITY);
+            Arrays.fill(visited[x], false);
             for (int y = 0; y < n; y++) {
                 maze[x][y] = mazeRows[x].charAt(y) - '0';
-                distances[x][y] = INFINITY;
-                visited[x][y] = false;
                 adjacents[x][y] = Stream.of(new Point(x - 1, y), new Point(x + 1, y),
                         new Point(x, y - 1), new Point(x, y + 1))
                         .filter(point -> (point.x >= 0 && point.x <= n - 1) && (point.y >= 0 && point.y <= n - 1))
@@ -76,7 +72,6 @@ public class PathFinderAlpinist {
             }
         }
         for (int x = 0; x < n; x++) {
-            weights[x] = new int[n][];
             for (int y = 0; y < n; y++) {
                 int mountainHeight = maze[x][y];
                 weights[x][y] = Arrays.stream(adjacents[x][y])
