@@ -4,9 +4,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toCollection;
 
 /**
  * 4 kyu
@@ -18,7 +17,7 @@ public class Chess {
     private static final int BOARD_SIZE = 8;
     private static final int INFINITY = 100_000;
 
-    private static Map<Point, Queue<Point>> reachableSquaresMap;
+    private static Map<Point, List<Point>> reachableSquaresMap;
 
     static {
         initKnightMoves();
@@ -53,8 +52,7 @@ public class Chess {
                 continue;
             }
             visited[nearestMove.x][nearestMove.y] = true;
-            Queue<Point> reachableSquares = reachableSquaresMap.get(nearestMove);
-            for (Point followingMove : reachableSquares) {
+            reachableSquaresMap.get(nearestMove).forEach(followingMove -> {
                 int distance = distances[nearestMove.x][nearestMove.y] + 1;
                 if (distances[followingMove.x][followingMove.y] > distance) {
                     distances[followingMove.x][followingMove.y] = distance;
@@ -62,7 +60,7 @@ public class Chess {
                     pathMap.get(followingMove).add(pointToChessCoordinate(nearestMove));
                     pathMap.get(followingMove).addAll(pathMap.get(nearestMove));
                 }
-            }
+            });
         }
         printPath(start, finish);
         return distances[end.x][end.y];
@@ -112,7 +110,7 @@ public class Chess {
         }
     }
 
-    private static Queue<Point> knightMoves(Point start) {
+    private static List<Point> knightMoves(Point start) {
         int x = start.x;
         int y = start.y;
         return Stream.of(
@@ -126,6 +124,6 @@ public class Chess {
                 new Point(x + 1, y + 2)
         )
                 .filter(point -> point.x >= 0 && point.x < BOARD_SIZE && point.y >= 0 && point.y < BOARD_SIZE)
-                .collect(toCollection(LinkedList::new));
+                .collect(Collectors.toList());
     }
 }
