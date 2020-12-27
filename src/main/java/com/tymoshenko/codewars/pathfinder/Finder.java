@@ -58,36 +58,32 @@ public class Finder {
         return distances[maze.length - 1][maze.length - 1];
     }
 
-    private void initMaze(String text) {
-        String[] mazeRows = text.split("\n");
-        maze = new int[mazeRows.length][];
-        distances = new int[mazeRows.length][];
-        visited = new boolean[mazeRows.length][];
-        adjacents = new Point[mazeRows.length][][];
-        weights = new int[mazeRows.length][][];
-        for (int x = 0; x < mazeRows.length; x++) {
-            maze[x] = new int[mazeRows.length];
-            distances[x] = new int[mazeRows.length];
-            visited[x] = new boolean[mazeRows.length];
-            adjacents[x] = new Point[mazeRows.length][];
-            for (int y = 0; y < mazeRows.length; y++) {
+    private void initMaze(String mazeString) {
+        String[] mazeRows = mazeString.split("\n");
+        int n = mazeRows.length;
+        maze = new int[n][];
+        distances = new int[n][];
+        visited = new boolean[n][];
+        adjacents = new Point[n][][];
+        weights = new int[n][][];
+        for (int x = 0; x < n; x++) {
+            maze[x] = new int[n];
+            distances[x] = new int[n];
+            visited[x] = new boolean[n];
+            adjacents[x] = new Point[n][];
+            for (int y = 0; y < n; y++) {
                 maze[x][y] = mazeRows[x].charAt(y) - '0';
                 distances[x][y] = INFINITY;
                 visited[x][y] = false;
-                adjacents[x][y] = Stream.of(
-                        new Point(x - 1, y),
-                        new Point(x + 1, y),
-                        new Point(x, y - 1),
-                        new Point(x, y + 1)
-                )
-                        .filter(p -> (p.x >= 0 && p.x <= maze.length - 1) && (p.y >= 0 && p.y <= maze.length - 1))
+                adjacents[x][y] = Stream.of(new Point(x - 1, y), new Point(x + 1, y),
+                        new Point(x, y - 1), new Point(x, y + 1))
+                        .filter(point -> (point.x >= 0 && point.x <= n - 1) && (point.y >= 0 && point.y <= n - 1))
                         .toArray(Point[]::new);
             }
         }
-
-        for (int x = 0; x < maze.length; x++) {
-            weights[x] = new int[mazeRows.length][];
-            for (int y = 0; y < maze.length; y++) {
+        for (int x = 0; x < n; x++) {
+            weights[x] = new int[n][];
+            for (int y = 0; y < n; y++) {
                 Point[] adjacentPoints = adjacents[x][y];
                 weights[x][y] = new int[adjacentPoints.length];
                 for (int i = 0; i < adjacentPoints.length; i++) {
