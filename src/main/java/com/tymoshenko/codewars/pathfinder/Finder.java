@@ -1,6 +1,6 @@
 package com.tymoshenko.codewars.pathfinder;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -30,29 +30,25 @@ public class Finder {
 
     public int findShortestPath() {
         distances[0][0] = 0;
-        NavigableMap<Integer, Queue<Point>> shortestDistanceMap = new TreeMap<>();
-        shortestDistanceMap.computeIfAbsent(0, ignored -> new LinkedList<>()).add(new Point(0, 0));
-        while (!shortestDistanceMap.isEmpty()) {
-            Map.Entry<Integer, Queue<Point>> nearestEntry = shortestDistanceMap.firstEntry();
-            Queue<Point> queue = nearestEntry.getValue();
-            while (!queue.isEmpty()) {
-                Point nearest = queue.poll();
-                if (visited[nearest.x][nearest.y]) {
-                    continue;
-                }
-                visited[nearest.x][nearest.y] = true;
-                // For all adjacent to the nearest point, calculate the min distance from the starting point.
-                Point[] adj = adjacents[nearest.x][nearest.y];
-                for (int i = 0; i < adj.length; i++) {
-                    Point neighbour = adj[i];
-                    int distance = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
-                    if (distances[neighbour.x][neighbour.y] > distance) {
-                        distances[neighbour.x][neighbour.y] = distance;
-                        shortestDistanceMap.computeIfAbsent(distance, ignored -> new LinkedList<>()).add(neighbour);
-                    }
+        Queue<Point> priorityQueue = new PriorityQueue<>(
+                Comparator.comparingInt(point -> distances[point.x][point.y]));
+        priorityQueue.add(new Point(0, 0));
+        while (!priorityQueue.isEmpty()) {
+            Point nearest = priorityQueue.poll();
+            if (visited[nearest.x][nearest.y]) {
+                continue;
+            }
+            visited[nearest.x][nearest.y] = true;
+            // For all adjacent to the nearest point, calculate the min distance from the starting point.
+            Point[] adj = adjacents[nearest.x][nearest.y];
+            for (int i = 0; i < adj.length; i++) {
+                Point neighbour = adj[i];
+                int distance = distances[nearest.x][nearest.y] + weights[nearest.x][nearest.y][i];
+                if (distances[neighbour.x][neighbour.y] > distance) {
+                    distances[neighbour.x][neighbour.y] = distance;
+                    priorityQueue.add(neighbour);
                 }
             }
-            shortestDistanceMap.remove(nearestEntry.getKey());
         }
         return distances[n - 1][n - 1];
     }
