@@ -1,7 +1,8 @@
 package com.tymoshenko.codewars;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 public class SpinWords {
 
@@ -11,7 +12,7 @@ public class SpinWords {
         return sentence == null ? "" : Arrays.stream(
                 sentence.split(ANY_WHITESPACE_REGEX))
                 .map(this::reverse)
-                .collect(Collectors.joining(" "));
+                .collect(joining(" "));
     }
 
     private String reverse(String word) {

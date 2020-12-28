@@ -2,9 +2,9 @@ package com.tymoshenko.codewars.romannumber;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.tymoshenko.codewars.romannumber.RomanDigit.*;
+import static java.util.stream.Collectors.joining;
 
 public class RomanNumeralsEncoderOOP implements DecimalToRomanConverter {
 
@@ -136,6 +136,6 @@ final class RomanNumber {
     public String toString() {
         return this.digits.stream()
                 .map(RomanDigit::toString)
-                .collect(Collectors.joining());
+                .collect(joining());
     }
 }

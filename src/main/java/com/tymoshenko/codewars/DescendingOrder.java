@@ -1,7 +1,8 @@
 package com.tymoshenko.codewars;
 
 import java.util.Comparator;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Your task is to make a function that can take any non-negative integer as an argument
@@ -15,7 +16,7 @@ public class DescendingOrder {
                         .chars()
                         .mapToObj(c -> String.valueOf((char) c))
                         .sorted(Comparator.reverseOrder())
-                        .collect(Collectors.joining()));
+                        .collect(joining()));
     }
 
 }

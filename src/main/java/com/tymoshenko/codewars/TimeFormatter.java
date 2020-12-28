@@ -2,7 +2,8 @@ package com.tymoshenko.codewars;
 
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * <p>
@@ -23,7 +24,7 @@ public class TimeFormatter {
         return Arrays.stream(TimeUnit.values())
                 .map(timeUnit -> formatTime(Math.abs(seconds), timeUnit))
                 .filter(durationFormatted -> !durationFormatted.isBlank())
-                .collect(Collectors.joining(", ", "", suffix))
+                .collect(joining(", ", "", suffix))
                 .replaceAll("(.+), (.+?)$", "$1 and $2");
     }
 
