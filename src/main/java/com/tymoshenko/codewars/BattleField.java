@@ -73,7 +73,7 @@ public class BattleField {
     private boolean noOverlap(int[][] field, Map<ShipType, List<Ship>> shipMap) {
         return shipMap.values().stream()
                 .flatMap(Collection::stream)
-                .flatMap(ship -> ship.borderWaters().stream())
+                .flatMap(ship -> ship.borders().stream())
                 .allMatch(borderCell -> field[borderCell.x][borderCell.y] == 0);
     }
 
@@ -109,7 +109,7 @@ class Ship {
         cells.forEach(cell -> field[cell.x][cell.y] = -1);
     }
 
-    List<Point> borderWaters() {
+    List<Point> borders() {
         List<Point> borders = new ArrayList<>();
         Point first = cells.get(0);
         Point last = cells.get(cells.size() - 1);
