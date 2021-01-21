@@ -126,15 +126,11 @@ class Ship {
         List<Point> borders = new ArrayList<>();
         Point firstCell = cells.get(0);
         Point lastCell = cells.get(cells.size() - 1);
-        int iMin;
-        int iMax;
-        int jMin;
-        int jMax;
         boolean horizontal = firstCell.x == lastCell.x;
-        iMin = horizontal ? firstCell.y - 1 : firstCell.x - 1;
-        iMax = horizontal ? lastCell.y + 1 : lastCell.x + 1;
-        jMin = horizontal ? firstCell.x - 1 : firstCell.y - 1;
-        jMax = horizontal ? firstCell.x + 1 : firstCell.y + 1;
+        int iMin = horizontal ? firstCell.y - 1 : firstCell.x - 1;
+        int iMax = horizontal ? lastCell.y + 1 : lastCell.x + 1;
+        int jMin = horizontal ? firstCell.x - 1 : firstCell.y - 1;
+        int jMax = horizontal ? firstCell.x + 1 : firstCell.y + 1;
         for (int i = iMin; i <= iMax; i++) {
             for (int j = jMin; j <= jMax; j++) {
                 Point cell = horizontal ? new Point(j, i) : new Point(i, j);
