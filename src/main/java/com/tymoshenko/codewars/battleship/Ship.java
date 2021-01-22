@@ -23,8 +23,14 @@ class Ship {
             ship.addCell(firstCell.x, dy);
             dy++;
         }
+        boolean horizontal = dy > firstCell.y + 1;
         int dx = firstCell.x + 1;
         while (dx < gameMap.length && gameMap[dx][firstCell.y] == 1) {
+            if (horizontal) {
+                // Found a ship that has some cells horizontal and other cells vertical.
+                throw new IllegalArgumentException("All cells of a ship must be positioned on a straight line: " +
+                        "either horizontal or vertical, but never both at the same time.");
+            }
             ship.addCell(dx, firstCell.y);
             dx++;
         }
