@@ -45,7 +45,11 @@ class Ship {
         cells.forEach(cell -> field[cell.x][cell.y] = -1);
     }
 
-    java.util.List<Point> borders() {
+    int size() {
+        return cells.size();
+    }
+
+    List<Point> borders() {
         List<Point> borders = new ArrayList<>();
         Point firstCell = cells.get(0);
         Point lastCell = cells.get(cells.size() - 1);
@@ -63,10 +67,6 @@ class Ship {
             }
         }
         return borders;
-    }
-
-    int size() {
-        return cells.size();
     }
 
     private boolean isWithinMap(Point cell) {
