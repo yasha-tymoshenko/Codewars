@@ -70,11 +70,11 @@ public class BattleField {
         }
     }
 
-    private void validateNoShipsOverlap(int[][] field, Map<ShipType, List<Ship>> shipMap) {
-        if (shipMap.values().stream()
+    private void validateNoShipsOverlap(int[][] gameMap, Map<ShipType, List<Ship>> ships) {
+        if (ships.values().stream()
                 .flatMap(Collection::stream)
                 .flatMap(ship -> ship.borders().stream())
-                .anyMatch(borderCell -> field[borderCell.x][borderCell.y] != 0)) {
+                .anyMatch(borderCell -> gameMap[borderCell.x][borderCell.y] != 0)) {
             throw new IllegalArgumentException("Some ships overlap.");
         }
     }
