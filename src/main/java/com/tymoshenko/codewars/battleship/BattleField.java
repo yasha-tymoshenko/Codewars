@@ -36,7 +36,7 @@ public class BattleField {
 
     private void validateSize(int[][] gameMap) {
         if (gameMap.length != GAME_MAP_SIZE
-                || !Arrays.stream(gameMap).allMatch(row -> row.length == GAME_MAP_SIZE)) {
+                || Arrays.stream(gameMap).anyMatch(row -> row.length != GAME_MAP_SIZE)) {
             throw new IllegalArgumentException(
                     String.format("Wrong battle field size. Expected %dx%d.", GAME_MAP_SIZE, GAME_MAP_SIZE));
         }
