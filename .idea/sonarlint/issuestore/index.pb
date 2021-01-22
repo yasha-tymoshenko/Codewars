@@ -103,9 +103,11 @@ Rsrc/main/java/com/tymoshenko/codewars/pathfinder/PathFinderCanYouReachTheExit.j
 Lsrc/test/java/com/tymoshenko/codewars/pathfinder/PathFinderAlpinistTest.java,8/3/838e1aa88ca2063ecec0e66b31ae6a1caa112155
 x
 Hsrc/main/java/com/tymoshenko/codewars/pathfinder/PathFinderAlpinist.java,7/a/7a61878ea9a3e05e57b7aa23eb0d152897a67a90
-p
-@src/test/java/com/tymoshenko/codewars/pathfinder/FinderTest.java,e/5/e5ea63aa0357f173568810912291048ed54ab652
-g
-7src/main/java/com/tymoshenko/codewars/pathfinder/T.java,e/b/ebee4f2cb637f2044e39c83ddba2b727679a691d
-l
-<src/main/java/com/tymoshenko/codewars/pathfinder/Finder.java,8/5/85fcbdc323987a5faf57cb2d7f17b9940cf620b6
+d
+4src/test/java/com/tymoshenko/codewars/ChessTest.java,d/7/d7256009193ae98d65bf1bac4edd7fd6ab7d4315
+^
+.src/main/java/com/tymoshenko/codewars/SG1.java,e/c/ec384780ad63e53f0ddb395e72d3721eb5d4ff18
+`
+0src/main/java/com/tymoshenko/codewars/Chess.java,a/1/a112c4023d6dc1574a83bbcc26fc26e2f62a3fbe
+b
+2src/test/java/com/tymoshenko/codewars/SG1Test.java,0/e/0e28cad11d19211da7e91ff91a6226fcab2326f3
