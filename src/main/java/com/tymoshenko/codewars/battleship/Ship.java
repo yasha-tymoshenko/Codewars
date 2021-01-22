@@ -7,7 +7,8 @@ import java.util.List;
 import static java.util.stream.Collectors.joining;
 
 class Ship {
-    private final java.util.List<Point> cells;
+
+    private final List<Point> cells;
 
     private Ship(Point cell) {
         cells = new ArrayList<>();
