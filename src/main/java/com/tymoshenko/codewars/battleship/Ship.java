@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.joining;
 class Ship {
 
     private final List<Point> cells;
+    private boolean horizontal = false;
 
     private Ship(Point cell) {
         cells = new ArrayList<>();
@@ -23,10 +24,10 @@ class Ship {
             ship.addCell(firstCell.x, dy);
             dy++;
         }
-        boolean horizontal = dy > firstCell.y + 1;
+        ship.horizontal = dy > firstCell.y + 1;
         int dx = firstCell.x + 1;
         while (dx < gameMap.length && gameMap[dx][firstCell.y] == 1) {
-            if (horizontal) {
+            if (ship.horizontal) {
                 // Found a ship that has some cells horizontal and other cells vertical.
                 throw new IllegalArgumentException("All cells of a ship must be positioned on a straight line: " +
                         "either horizontal or vertical, but never both at the same time.");
@@ -60,7 +61,6 @@ class Ship {
         List<Point> borders = new ArrayList<>();
         Point firstCell = cells.get(0);
         Point lastCell = cells.get(cells.size() - 1);
-        boolean horizontal = firstCell.x == lastCell.x;
         int iMin = horizontal ? firstCell.y - 1 : firstCell.x - 1;
         int iMax = horizontal ? lastCell.y + 1 : lastCell.x + 1;
         int jMin = horizontal ? firstCell.x - 1 : firstCell.y - 1;
