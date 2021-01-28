@@ -10,7 +10,8 @@ import static java.util.stream.Collectors.groupingBy;
  * <p>
  * Battleship field validator
  * <p>
- * https://www.codewars.com/kata/52bb6539a4cf1b12d90005b7/train/java
+ *
+ * @see <a href="Task Description">https://www.codewars.com/kata/52bb6539a4cf1b12d90005b7/train/java</a>
  */
 public class BattleField {
 
